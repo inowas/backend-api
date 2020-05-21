@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  php:
+    build:
+      context: .
+      target: api_platform_php
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - .:/srv/api:rw,cached
+
+  api:
+    build:
+      context: .
+      target: api_platform_nginx
+    restart: always
+    depends_on:
+      - php
+    volumes:
+      - ./public:/srv/api/public:ro
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.basic.frontend.rule=Host:${HOST_URL}"
+      - "traefik.basic.port=80"
+      - "traefik.basic.protocol=http"
+    networks:
+      - web
+      - default
+
+  db:
+    # In production, you may want to use a managed database service
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=api
+      - POSTGRES_USER=api-platform
+      - POSTGRES_PASSWORD=!ChangeMe!
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data:rw
+
+networks:
+  web:
+    external: true

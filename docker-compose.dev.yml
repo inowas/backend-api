@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  php:
+    build:
+      context: .
+      target: api_platform_php
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - .:/srv/api:rw,cached
+
+  api:
+    build:
+      context: .
+      target: api_platform_nginx
+    restart: always
+    depends_on:
+      - php
+    volumes:
+      - ./public:/srv/api/public:ro
+    ports:
+      - "8080:80"
+    networks:
+      - web
+      - default
+
+  db:
+    # In production, you may want to use a managed database service
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=api
+      - POSTGRES_USER=api-platform
+      - POSTGRES_PASSWORD=!ChangeMe!
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data:rw
+    ports:
+      - "5432:5432"
+
+networks:
+  web:
+    external: true

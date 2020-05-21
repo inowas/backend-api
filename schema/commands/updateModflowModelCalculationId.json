@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "message_name": {
+      "type": "string",
+      "pattern": "^updateModflowModelCalculationId$"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "calculation_id": {
+          "title": "MD5-Hash of the content",
+          "type": "string",
+          "pattern": "^([^:]+:[a-fA-F0-9]+|[a-fA-F0-9]{32}|)$"
+        }
+      },
+      "required": [
+        "id",
+        "calculation_id"
+      ]
+    }
+  },
+  "required": [
+    "uuid",
+    "message_name",
+    "metadata",
+    "payload"
+  ]
+}
