@@ -21,14 +21,11 @@ class LoadDefaultTools extends Command
 {
     protected static $defaultName = 'app:load-tools';
 
-    /** @var MessageBusInterface $commandBus */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
-    /** @var EntityManager $entityManager */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /** @var KernelInterface $kernel */
-    private $kernel;
+    private KernelInterface $kernel;
 
     public function __construct(MessageBusInterface $commandBus, EntityManagerInterface $entityManager, KernelInterface $kernel)
     {
@@ -52,7 +49,7 @@ class LoadDefaultTools extends Command
      * @return int|void|null
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $username = $input->getArgument('username');
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $username]);

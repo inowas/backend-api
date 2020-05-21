@@ -49,12 +49,12 @@ class LoadUsersFromFile extends Command
      * @return int|void|null
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $file = $input->getArgument('file');
         $filename = sprintf('%s/%s', $this->kernel->getProjectDir(), $file);
         try {
-            $users = json_decode(file_get_contents($filename), true);
+            $users = json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             return;

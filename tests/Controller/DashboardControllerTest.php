@@ -37,7 +37,20 @@ class DashboardControllerTest extends CommandTestBaseClass
 
         $response = $this->sendRequest('/v3/tools/' . $publicTool1User1->tool() . '/?public=true', $token);
         $this->assertEquals(200, $response->getStatusCode());
-        $tools = json_decode($response->getContent(), true);
+        $tools = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertCount(4, $tools);
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanReadAllPublicModflowModels(): void
+    {
+        $user = $this->createRandomUser();
+        $token = $this->getToken($user->getUsername(), $user->getPassword());
+        $response = $this->sendRequest('/v3/tools/T03?public=true', $token);
+        $this->assertEquals(200, $response->getStatusCode());
+        $tools = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertCount(0, $tools);
     }
 }

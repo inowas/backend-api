@@ -43,7 +43,7 @@ final class CreateUserCommand extends Command
      * @return int|void|null
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
 
         $username = $input->getArgument('username');
