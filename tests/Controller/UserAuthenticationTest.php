@@ -2,9 +2,11 @@
 
 namespace App\Tests\Controller;
 
+use Exception;
+
 class UserAuthenticationTest extends CommandTestBaseClass
 {
-    public function provider(): array
+    public function authenticationProvider(): array
     {
         return [
             ['admin', 'admin_pw', ['ROLE_ADMIN'], 200],
@@ -13,12 +15,12 @@ class UserAuthenticationTest extends CommandTestBaseClass
     }
 
     /**
-     * @dataProvider provider
+     * @dataProvider authenticationProvider
      * @param $username
      * @param $password
      * @param $roles
      * @param $statusCode
-     * @throws \Exception
+     * @throws Exception
      */
     public function testAuthentication($username, $password, $roles, $statusCode): void
     {
@@ -33,10 +35,10 @@ class UserAuthenticationTest extends CommandTestBaseClass
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_Authorization' => sprintf('Bearer %s',  $token)
+                'HTTP_Authorization' => sprintf('Bearer %s', $token)
             ]
         );
 
-        $this->assertEquals($statusCode, $client->getResponse()->getStatusCode());
+        self::assertEquals($statusCode, $client->getResponse()->getStatusCode());
     }
 }

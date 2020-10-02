@@ -59,16 +59,16 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 final class MessageBoxController
 {
     /** @var MessageBusInterface */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
     /** @var TokenStorageInterface */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
     /** @var Security */
-    private $security;
+    private Security $security;
 
     /** @var array */
-    private $availableCommands = [];
+    private array $availableCommands = [];
 
     public function __construct(
         MessageBusInterface $bus,

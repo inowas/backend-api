@@ -14,7 +14,7 @@ class UserController
 {
 
     /** @var TokenStorageInterface */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
 
     public function __construct(TokenStorageInterface $tokenStorage)

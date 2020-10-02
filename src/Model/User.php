@@ -6,7 +6,9 @@ namespace App\Model;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -16,31 +18,31 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ApiResource(
  *     collectionOperations={"get"},
  *     itemOperations={"get"},
- *     attributes={"access_control"="is_granted('ROLE_ADMIN')"})
+ *     attributes={"security"="is_granted('ROLE_ADMIN')"})
  */
 class User implements UserInterface
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true, nullable=false)
      */
-    private $id;
+    private UuidInterface $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=255, unique=true, nullable=false)
      */
-    private $username;
+    private string $username;
 
     /**
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
-    private $password;
+    private string $password;
 
     /**
      * @var string
@@ -68,14 +70,14 @@ class User implements UserInterface
      *
      * @ORM\Column(name="profile", type="json_array", nullable=false)
      */
-    private $profile;
+    private array $profile;
 
     /**
      * @param string $aggregateId
      * @param string $username
      * @param string $password
      * @return User
-     * @throws \Exception
+     * @throws Exception
      */
     public static function withAggregateId(string $aggregateId, string $username, string $password): self
     {
@@ -86,11 +88,11 @@ class User implements UserInterface
 
     /**
      * User constructor.
-     * @param string|null $username
-     * @param string|null $password
+     * @param string $username
+     * @param string $password
      * @param array $roles
      * @param bool $enabled
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(string $username, string $password, array $roles = [], bool $enabled = true)
     {
@@ -103,7 +105,7 @@ class User implements UserInterface
         $this->profile = [];
     }
 
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
     }

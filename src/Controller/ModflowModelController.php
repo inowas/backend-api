@@ -18,10 +18,10 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 class ModflowModelController
 {
     /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     /** @var TokenStorageInterface */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
 
     public function __construct(
