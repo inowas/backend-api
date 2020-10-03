@@ -13,6 +13,7 @@
 
 ###> INOWAS-Platform
 /users.json
+/docker/db
 ###< INOWAS-Platform
 
 ###> lexik/jwt-authentication-bundle ###
@@ -25,4 +26,3 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-/docker/db
