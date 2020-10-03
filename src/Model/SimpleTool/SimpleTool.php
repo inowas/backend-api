@@ -16,7 +16,7 @@ class SimpleTool extends ToolInstance
      * @var array
      * @ORM\Column(name="data", type="json_array")
      */
-    private $data = [];
+    private array $data = [];
 
     public function data(): array
     {

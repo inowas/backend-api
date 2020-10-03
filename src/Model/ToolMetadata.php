@@ -7,9 +7,9 @@ namespace App\Model;
 class ToolMetadata extends ValueObject
 {
 
-    private $name;
-    private $description;
-    private $isPublic;
+    private string $name;
+    private string $description;
+    private bool $isPublic;
 
     public static function fromParams(string $name, string $description, bool $isPublic): ToolMetadata
     {

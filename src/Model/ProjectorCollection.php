@@ -6,7 +6,7 @@ namespace App\Model;
 
 final class ProjectorCollection
 {
-    private $projectors = [];
+    private array $projectors = [];
 
     public function __construct(iterable $projectors)
     {

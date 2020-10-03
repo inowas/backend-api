@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use RuntimeException;
+use function array_slice;
+use function get_class;
 
 abstract class Projector
 {
@@ -30,8 +33,8 @@ abstract class Projector
     {
         $handler = $this->determineEventMethodFor($e);
         if (!method_exists($this, $handler)) {
-            throw new \RuntimeException(sprintf(
-                'Missing event method %s for projector %s', $handler, \get_class($this)
+            throw new RuntimeException(sprintf(
+                'Missing event method %s for projector %s', $handler, get_class($this)
             ));
         }
         $this->{$handler}($e);
@@ -39,7 +42,7 @@ abstract class Projector
 
     protected function determineEventMethodFor(DomainEvent $e): string
     {
-        return 'on' . implode(\array_slice(explode('\\', \get_class($e)), -1));
+        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 
     /**
@@ -78,7 +81,7 @@ abstract class Projector
      * $array2 = ['boundaries' => ['id' => 1]];
      * $result = ['boundaries' => [['id' => 2],['id' => 3]]];
      */
-    protected function array_remove_element(array $array1, array $array2)
+    protected function array_remove_element(array $array1, array $array2): array
     {
         function recursiveRemoval(&$array1, &$array2)
         {

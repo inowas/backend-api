@@ -7,21 +7,22 @@ use App\Model\Modflow\ModflowModel;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\ToolInstance;
 use App\Model\User;
+use App\Repository\ToolRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 
 final class DashboardController
 {
-
     /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     /** @var TokenStorageInterface */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
 
     public function __construct(
@@ -41,8 +42,14 @@ final class DashboardController
      */
     public function __invoke(Request $request, string $tool): JsonResponse
     {
+        $token = $this->tokenStorage->getToken();
+        if (null === $token) {
+            return new JsonResponse(['message' => 'error'], Response::HTTP_FORBIDDEN);
+        }
+
         /** @var User $user */
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $token->getUser();
+
         switch ($tool) {
             case ('T03'):
                 $toolClass = ModflowModel::class;
@@ -56,30 +63,9 @@ final class DashboardController
 
         $isPublic = $request->query->has('public') && $request->query->get('public') === 'true';
 
-        if ($toolClass === SimpleTool::class) {
-            $instances = $this->entityManager
-                ->getRepository(SimpleTool::class)
-                ->getTool($tool, $user, $isPublic, false);
-            return $this->createResponse($instances);
-        }
-
-        if ($isPublic) {
-            $instances = $this->entityManager->getRepository($toolClass)->findBy([
-                'tool' => $tool,
-                'isPublic' => true,
-                'isScenario' => false,
-                'isArchived' => false
-            ]);
-            return $this->createResponse($instances);
-        }
-
-        $instances = $this->entityManager->getRepository($toolClass)->findBy([
-            'tool' => $tool,
-            'user' => $user,
-            'isScenario' => false,
-            'isArchived' => false
-        ]);
-
+        /** @var ToolRepositoryInterface $repository */
+        $repository = $this->entityManager->getRepository($toolClass);
+        $instances = $repository->getTool($tool, $user, $isPublic, false);
         return $this->createResponse($instances);
     }
 
@@ -94,7 +80,7 @@ final class DashboardController
                 'description' => $instance->description(),
                 'created_at' => $instance->createdAt()->format(DATE_ATOM),
                 'updated_at' => $instance->createdAt()->format(DATE_ATOM),
-                'user_name' => $instance->getUser()->getUsername()
+                'user_name' => $instance->getUsername()
             ];
         }
 

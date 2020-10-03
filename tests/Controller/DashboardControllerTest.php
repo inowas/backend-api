@@ -2,10 +2,13 @@
 
 namespace App\Tests\Controller;
 
+use JsonException;
+
 class DashboardControllerTest extends CommandTestBaseClass
 {
     /**
      * @test
+     * @throws JsonException
      */
     public function aUserCanReadHisPrivateTools(): void
     {
@@ -15,13 +18,14 @@ class DashboardControllerTest extends CommandTestBaseClass
 
         $response = $this->sendRequest('/v3/tools/' . $privateTool->tool(), $token);
         self::assertEquals(200, $response->getStatusCode());
-        $tools = json_decode($response->getContent(), true);
+        $tools = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(1, $tools);
         self::assertEquals($privateTool->toArray()['id'], $tools[0]['id']);
     }
 
     /**
      * @test
+     * @throws JsonException
      */
     public function aUserCanReadAllPublicTools(): void
     {
@@ -43,6 +47,7 @@ class DashboardControllerTest extends CommandTestBaseClass
 
     /**
      * @test
+     * @throws JsonException
      */
     public function aUserCanReadAllPublicModflowModels(): void
     {

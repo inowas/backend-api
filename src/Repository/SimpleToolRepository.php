@@ -7,9 +7,9 @@ namespace App\Repository;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
-class SimpleToolRepository extends ServiceEntityRepository
+class SimpleToolRepository extends ServiceEntityRepository implements ToolRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

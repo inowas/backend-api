@@ -9,10 +9,10 @@ use Ramsey\Uuid\Uuid;
 
 class ScenarioAnalysis
 {
-    private $baseId;
-    private $scenarioIds = [];
+    private string $baseId;
+    private array $scenarioIds = [];
 
-    public static function createWithBaseId($baseId): ScenarioAnalysis
+    public static function createWithBaseId(string $baseId): ScenarioAnalysis
     {
         $self = new self();
         $self->baseId = $baseId;
@@ -48,12 +48,12 @@ class ScenarioAnalysis
         return $this->scenarioIds;
     }
 
-    public function addScenarioId($scenarioId)
+    public function addScenarioId($scenarioId): void
     {
         $this->scenarioIds[] = $scenarioId;
     }
 
-    public function removeScenarioId($scenarioIdToRemove)
+    public function removeScenarioId($scenarioIdToRemove): void
     {
         foreach ($this->scenarioIds as $key => $scenarioId) {
             if ($scenarioId === $scenarioIdToRemove) {
@@ -64,7 +64,7 @@ class ScenarioAnalysis
         $this->scenarioIds = array_values($this->scenarioIds);
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'base_id' => $this->baseId,

@@ -9,18 +9,22 @@ use App\Domain\User\Aggregate\UserAggregate;
 use App\Model\Aggregate;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
+use RuntimeException;
+use function get_class;
 
 final class AggregateRepository
 {
-    private $aggregates = [
+    private array $aggregates = [
         UserAggregate::class,
     ];
 
-    private $aggregateMap = [];
+    private array $aggregateMap = [];
     private $eventMap = [];
 
     /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     /** @var EventRepository $eventRepository */
     private $eventRepository;
@@ -33,6 +37,7 @@ final class AggregateRepository
         /** @var Aggregate $aggregate */
         foreach ($this->aggregates as $aggregate) {
             $this->aggregateMap[$aggregate::NAME] = $aggregate;
+            /** @noinspection SlowArrayOperationsInLoopInspection */
             $this->eventMap = array_merge($this->eventMap, $aggregate::eventMap());
         }
     }
@@ -53,30 +58,26 @@ final class AggregateRepository
      * @param $aggregateClass
      * @param string $aggregateId
      * @return Aggregate
-     * @throws \Exception
+     * @throws Exception
      */
     public function findAggregateById($aggregateClass, string $aggregateId): Aggregate
     {
         /** @var string $aggregateName */
         $aggregateName = $aggregateClass::NAME;
 
-        /** @var ArrayCollection $events */
         $events = $this->findEventsByAggregateId($aggregateName, $aggregateId);
-
         if ($events->isEmpty()) {
-            throw new \Exception('Unknown AggregateId');
+            throw new RuntimeException('Unknown AggregateId');
         }
 
         if (!array_key_exists($aggregateName, $this->aggregateMap)) {
-            throw new \RuntimeException(sprintf('Missing aggregateType in aggregateMap class %s', \get_class($this)));
+            throw new RuntimeException(sprintf('Missing aggregateType in aggregateMap class %s', get_class($this)));
         }
 
         /** @var Aggregate $aggregateClass */
         $aggregate = $aggregateClass::withId($aggregateId);
 
-        /** @var ArrayCollection $events */
         $events = $this->findEventsByAggregateId($aggregateName, $aggregateId);
-
         foreach ($events->getIterator() as $event) {
             $aggregate->apply($event);
         }
@@ -103,8 +104,8 @@ final class AggregateRepository
     /**
      * @param DomainEvent $event
      * @return bool
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function storeEvent(DomainEvent $event): bool
     {
@@ -131,7 +132,7 @@ final class AggregateRepository
         return $events->map(function ($event) {
             /** @var DomainEvent $event */
             if (!array_key_exists($event->getEventName(), $this->eventMap)) {
-                throw new \RuntimeException(sprintf('Missing eventType in eventMap class %s', \get_class($this)));
+                throw new RuntimeException(sprintf('Missing eventType in eventMap class %s', get_class($this)));
             }
 
             $classname = $this->eventMap[$event->getEventName()];

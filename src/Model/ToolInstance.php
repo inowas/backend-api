@@ -7,13 +7,14 @@ namespace App\Model;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use JsonSerializable;
 
 
 /**
  * @ORM\MappedSuperclass()
  * @ORM\HasLifecycleCallbacks
  */
-abstract class ToolInstance implements \JsonSerializable
+abstract class ToolInstance implements JsonSerializable
 {
     /**
      * @var string
@@ -21,7 +22,7 @@ abstract class ToolInstance implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(name="id", type="string", unique=true, nullable=false)
      */
-    protected $id;
+    protected string $id;
 
     /**
      * @var User
@@ -29,71 +30,65 @@ abstract class ToolInstance implements \JsonSerializable
      * @ORM\ManyToOne(targetEntity="App\Model\User")
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
-    protected $user;
+    protected User $user;
 
     /**
      * @var string
      *
      * @ORM\Column(name="tool", type="string", length=36, nullable=false)
      */
-    protected $tool;
+    protected string $tool;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=false)
      */
-    protected $description;
+    protected string $description;
 
     /**
      * @var bool
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=false)
      */
-    protected $isPublic;
+    protected bool $isPublic;
 
     /**
      * @var bool
      *
      * @ORM\Column(name="is_archived", type="boolean", nullable=false)
      */
-    protected $isArchived;
+    protected bool $isArchived;
 
     /**
      * @var bool
      *
      * @ORM\Column(name="is_scenario", type="boolean", nullable=false)
      */
-    protected $isScenario;
+    protected bool $isScenario;
 
     /**
-     * @var DateTimeImmutable
+     * @var ?DateTimeImmutable
      *
      * @ORM\Column(name="created_at", type="datetime_immutable", nullable=false)
      */
-    protected $createdAt;
+    protected ?DateTimeImmutable $createdAt = null;
 
     /**
-     * @var DateTimeImmutable
+     * @var ?DateTimeImmutable
      *
      * @ORM\Column(name="updated_at", type="datetime_immutable", nullable=false)
      */
-    protected $updatedAt;
+    protected ?DateTimeImmutable $updatedAt = null;
 
-    public function __clone()
-    {
-        $this->id = null;
-        $this->createdAt = null;
-    }
-
-    public static function createWithParams(string $id, User $user, string $tool, ToolMetadata $metadata)
+    public static function createWithParams(string $id, User $user, string $tool, ToolMetadata $metadata): self
     {
         $static = new static();
         $static->id = $id;
@@ -136,7 +131,7 @@ abstract class ToolInstance implements \JsonSerializable
 
     public function userId(): ?string
     {
-        return $this->getUser() instanceOf User ? $this->getUser()->getId()->toString() : null;
+        return $this->getUser() instanceof User ? $this->getUser()->getId()->toString() : null;
     }
 
     public function getUser(): ?User
@@ -147,6 +142,15 @@ abstract class ToolInstance implements \JsonSerializable
     public function setUser(User $user): void
     {
         $this->user = $user;
+    }
+
+    public function getUsername(): ?string
+    {
+        if (null === $this->getUser()) {
+            return '';
+        }
+
+        return $this->getUser()->getUsername();
     }
 
     public function setMetadata(ToolMetadata $metadata): void
