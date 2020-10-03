@@ -8,11 +8,14 @@ use App\Domain\ToolInstance\Command\ImportModflowModelCommand;
 use App\Model\Modflow\ModflowModel;
 use App\Model\ToolMetadata;
 use App\Model\User;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class ImportModflowModelCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -22,20 +25,20 @@ class ImportModflowModelCommandHandler
 
     /**
      * @param ImportModflowModelCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(ImportModflowModelCommand $command)
     {
         $modelId = $command->id();
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
         if ($modflowModel instanceof ModflowModel) {
-            throw new \Exception(sprintf('ModflowModel with id: %s is already existing', $modelId));
+            throw new RuntimeException(sprintf('ModflowModel with id: %s is already existing', $modelId));
         }
 
         $userId = $command->metadata()['user_id'];
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
         $modflowModel = ModflowModel::createWithParams($modelId, $user, 'T03', ToolMetadata::fromParams(
@@ -46,6 +49,6 @@ class ImportModflowModelCommandHandler
         $modflowModel->setBoundaries($command->boundaries());
 
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush();
+        $this->entityManager->flush($modflowModel);
     }
 }

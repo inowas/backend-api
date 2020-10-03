@@ -30,6 +30,7 @@ class CommandTestBaseClass extends WebTestCase
      * @return User
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws \Exception
      */
     protected function createRandomUser(): User
     {

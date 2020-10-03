@@ -9,6 +9,8 @@ use App\Model\Modflow\ModflowModel;
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class CreateModflowModelCommandHandler
 {
@@ -23,7 +25,7 @@ class CreateModflowModelCommandHandler
 
     /**
      * @param CreateModflowModelCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(CreateModflowModelCommand $command)
     {
@@ -35,7 +37,7 @@ class CreateModflowModelCommandHandler
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
         $modflowModel = ModflowModel::createWithParams($id, $user, 'T03', $metadata);

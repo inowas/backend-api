@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\ScenarioAnalysis;
 
 
+use Exception;
 use Ramsey\Uuid\Uuid;
 
 class ScenarioAnalysis
@@ -28,7 +29,7 @@ class ScenarioAnalysis
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __clone()
     {

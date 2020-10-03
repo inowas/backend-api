@@ -12,6 +12,8 @@ use App\Model\ToolInstance;
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class CloneToolInstanceCommandHandler
 {
@@ -25,7 +27,7 @@ class CloneToolInstanceCommandHandler
 
     /**
      * @param CloneToolInstanceCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(CloneToolInstanceCommand $command)
     {
@@ -35,7 +37,7 @@ class CloneToolInstanceCommandHandler
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new Exception(sprintf('User with id %s not found.', $userId));
         }
 
         /** @var SimpleTool $original */
@@ -50,13 +52,13 @@ class CloneToolInstanceCommandHandler
         }
 
         if (!$original instanceof ToolInstance) {
-            throw new \Exception('ToolInstance not found');
+            throw new RuntimeException('ToolInstance not found');
         }
 
         # The user needs to be the owner of the model or the model has to be public
         $canBeCloned = ($userId === $original->userId() || true === $original->isPublic());
         if (!$canBeCloned) {
-            throw new \Exception('The tool cannot be cloned due to permission problems.');
+            throw new RuntimeException('The tool cannot be cloned due to permission problems.');
         }
 
         /** @var ToolInstance $clone */

@@ -11,11 +11,13 @@ use App\Model\Modflow\Discretization;
 use App\Model\Modflow\ModflowModel;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 
 class CreateToolInstanceCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -34,7 +36,7 @@ class CreateToolInstanceCommandHandler
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
         $tool = $command->tool();
         $metadata = $command->toolMetadata();
@@ -56,6 +58,6 @@ class CreateToolInstanceCommandHandler
 
         $instance->setData($data);
         $this->entityManager->persist($instance);
-        $this->entityManager->flush();
+        $this->entityManager->flush($instance);
     }
 }

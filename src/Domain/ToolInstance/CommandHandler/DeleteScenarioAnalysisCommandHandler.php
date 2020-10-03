@@ -6,11 +6,13 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\DeleteScenarioAnalysisCommand;
 use App\Model\SimpleTool\SimpleTool;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 
 class DeleteScenarioAnalysisCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -30,15 +32,15 @@ class DeleteScenarioAnalysisCommandHandler
         $simpleTool = $this->entityManager->getRepository(SimpleTool::class)->findOneBy(['id' => $id]);
 
         if (!$simpleTool instanceof SimpleTool) {
-            throw new \Exception('ToolInstance not found');
+            throw new RuntimeException('ToolInstance not found');
         }
 
         if ($simpleTool->userId() !== $userId) {
-            throw new \Exception('The scenarioAnalysis cannot be deleted due to permission problems.');
+            throw new RuntimeException('The scenarioAnalysis cannot be deleted due to permission problems.');
         }
 
         $simpleTool->setIsArchived(true);
         $this->entityManager->persist($simpleTool);
-        $this->entityManager->flush();
+        $this->entityManager->flush($simpleTool);
     }
 }

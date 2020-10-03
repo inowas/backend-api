@@ -9,15 +9,15 @@ use App\Model\Modflow\ModflowModel;
 use App\Model\ScenarioAnalysis\ScenarioAnalysis;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use RuntimeException;
 
 class CreateScenarioCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
-
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -56,7 +56,7 @@ class CreateScenarioCommandHandler
         $simpleTool->setData($scenarioAnalysis->toArray());
 
         $this->entityManager->persist($simpleTool);
-        $this->entityManager->flush();
+        $this->entityManager->flush($simpleTool);
     }
 
     /**
@@ -81,6 +81,6 @@ class CreateScenarioCommandHandler
         $name .= ' (clone)';
         $clonedModel->setName($name);
         $this->entityManager->persist($clonedModel);
-        $this->entityManager->flush();
+        $this->entityManager->flush($clonedModel);
     }
 }

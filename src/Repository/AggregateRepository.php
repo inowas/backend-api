@@ -8,6 +8,7 @@ use App\Model\DomainEvent;
 use App\Domain\User\Aggregate\UserAggregate;
 use App\Model\Aggregate;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
@@ -23,10 +24,10 @@ final class AggregateRepository
     private array $aggregateMap = [];
     private $eventMap = [];
 
-    /** @var EntityManagerInterface */
-    private EntityManagerInterface $entityManager;
+    /** @var EntityManager */
+    private $entityManager;
 
-    /** @var EventRepository $eventRepository */
+    /** @var EventRepository */
     private $eventRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -117,7 +118,7 @@ final class AggregateRepository
         }
 
         $this->entityManager->persist($event);
-        $this->entityManager->flush();
+        $this->entityManager->flush($event);
         return true;
     }
 

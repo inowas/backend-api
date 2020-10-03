@@ -8,6 +8,7 @@ use App\Domain\ToolInstance\Command\DeleteModflowModelCommand;
 use App\Model\Modflow\ModflowModel;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 
 class DeleteModflowModelCommandHandler
 {
@@ -31,11 +32,11 @@ class DeleteModflowModelCommandHandler
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $id]);
 
         if (!$modflowModel instanceof ModflowModel) {
-            throw new \Exception('ToolInstance not found');
+            throw new RuntimeException('ToolInstance not found');
         }
 
         if ($modflowModel->userId() !== $userId) {
-            throw new \Exception('The modflowModel cannot be deleted due to permission problems.');
+            throw new RuntimeException('The modflowModel cannot be deleted due to permission problems.');
         }
 
         $modflowModel->setIsArchived(true);

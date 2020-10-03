@@ -9,11 +9,14 @@ use App\Model\Mcda\Mcda;
 use App\Model\Modflow\ModflowModel;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\ToolInstance;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class DeleteToolInstanceCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -23,7 +26,7 @@ class DeleteToolInstanceCommandHandler
 
     /**
      * @param DeleteToolInstanceCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(DeleteToolInstanceCommand $command)
     {
@@ -42,15 +45,15 @@ class DeleteToolInstanceCommandHandler
         }
 
         if (!$toolInstance instanceof ToolInstance) {
-            throw new \Exception('ToolInstance not found');
+            throw new RuntimeException('ToolInstance not found');
         }
 
         if ($toolInstance->userId() !== $userId) {
-            throw new \Exception('The tool cannot be deleted due to permission problems.');
+            throw new RuntimeException('The tool cannot be deleted due to permission problems.');
         }
 
         $toolInstance->setIsArchived(true);
         $this->entityManager->persist($toolInstance);
-        $this->entityManager->flush();
+        $this->entityManager->flush($toolInstance);
     }
 }

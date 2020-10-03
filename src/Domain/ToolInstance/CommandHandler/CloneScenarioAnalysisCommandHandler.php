@@ -11,6 +11,8 @@ use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class CloneScenarioAnalysisCommandHandler
 {
@@ -24,7 +26,7 @@ class CloneScenarioAnalysisCommandHandler
 
     /**
      * @param CloneScenarioAnalysisCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(CloneScenarioAnalysisCommand $command)
     {
@@ -33,12 +35,12 @@ class CloneScenarioAnalysisCommandHandler
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
         $simpleTool = $this->entityManager->getRepository(SimpleTool::class)->findOneBy(['id' => $id]);
         if (!$simpleTool instanceof SimpleTool) {
-            throw new \Exception('ToolInstance not found');
+            throw new RuntimeException('ToolInstance not found');
         }
 
         $oldScenarioAnalysis = ScenarioAnalysis::fromArray($simpleTool->data());
@@ -66,14 +68,14 @@ class CloneScenarioAnalysisCommandHandler
      * @param $modelId
      * @param $newModelId
      * @param $user
-     * @throws \Exception
+     * @throws Exception
      */
     private function cloneModel($modelId, $newModelId, $user): void
     {
         $modelToClone = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
 
         if (!$modelToClone instanceof ModflowModel) {
-            throw new \Exception('Model not found.');
+            throw new RuntimeException('Model not found.');
         }
 
         $clonedModel = clone $modelToClone;

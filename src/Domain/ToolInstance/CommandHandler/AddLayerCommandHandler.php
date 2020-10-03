@@ -8,6 +8,8 @@ use App\Domain\ToolInstance\Command\AddLayerCommand;
 use App\Model\Modflow\ModflowModel;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 final class AddLayerCommandHandler
 {
@@ -21,7 +23,7 @@ final class AddLayerCommandHandler
 
     /**
      * @param AddLayerCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(AddLayerCommand $command)
     {
@@ -31,11 +33,11 @@ final class AddLayerCommandHandler
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
 
         if (!$modflowModel instanceof ModflowModel) {
-            throw new \Exception('ModflowModel not found');
+            throw new RuntimeException('ModflowModel not found');
         }
 
         if ($modflowModel->userId() !== $userId) {
-            throw new \Exception('The Model cannot be updated due to permission problems.');
+            throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
         $soilmodel = $modflowModel->soilmodel();

@@ -8,11 +8,13 @@ use App\Domain\ToolInstance\Command\AddBoundaryCommand;
 use App\Model\Modflow\ModflowModel;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 final class AddBoundaryCommandHandler
 {
     /** @var EntityManager */
-    private $entityManager;
+    protected $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -21,7 +23,7 @@ final class AddBoundaryCommandHandler
 
     /**
      * @param AddBoundaryCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(AddBoundaryCommand $command)
     {
@@ -31,11 +33,11 @@ final class AddBoundaryCommandHandler
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
 
         if (!$modflowModel instanceof ModflowModel) {
-            throw new \Exception('ModflowModel not found');
+            throw new RuntimeException('ModflowModel not found');
         }
 
         if ($modflowModel->userId() !== $userId) {
-            throw new \Exception('The Model cannot be updated due to permission problems.');
+            throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
         $boundaries = $modflowModel->boundaries();

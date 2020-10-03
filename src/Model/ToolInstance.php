@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use JsonSerializable;
+use Ramsey\Uuid\Uuid;
 
 
 /**
@@ -17,16 +18,12 @@ use JsonSerializable;
 abstract class ToolInstance implements JsonSerializable
 {
     /**
-     * @var string
-     *
      * @ORM\Id
      * @ORM\Column(name="id", type="string", unique=true, nullable=false)
      */
     protected string $id;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="App\Model\User")
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
@@ -87,6 +84,12 @@ abstract class ToolInstance implements JsonSerializable
      * @ORM\Column(name="updated_at", type="datetime_immutable", nullable=false)
      */
     protected ?DateTimeImmutable $updatedAt = null;
+
+    public function __clone()
+    {
+        $this->id = Uuid::uuid4()->toString();
+        $this->createdAt = new DateTimeImmutable();
+    }
 
     public static function createWithParams(string $id, User $user, string $tool, ToolMetadata $metadata): self
     {

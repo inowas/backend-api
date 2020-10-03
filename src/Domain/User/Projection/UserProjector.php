@@ -14,12 +14,20 @@ use App\Domain\User\Event\UserHasBeenReactivated;
 use App\Domain\User\Event\UsernameHasBeenChanged;
 use App\Domain\User\Event\UserPasswordHasBeenChanged;
 use App\Domain\User\Event\UserProfileHasBeenChanged;
+use App\Repository\UserRepository;
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 final class UserProjector extends Projector
 {
 
+    /** @var EntityManager */
     private $entityManager;
+
+    /** @var UserRepository */
     private $userRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -35,7 +43,7 @@ final class UserProjector extends Projector
 
     /**
      * @param UserHasBeenArchived $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserHasBeenArchived(UserHasBeenArchived $event): void
     {
@@ -43,17 +51,17 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $user->setArchived(true);
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UserHasBeenCreated $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserHasBeenCreated(UserHasBeenCreated $event): void
     {
@@ -61,12 +69,12 @@ final class UserProjector extends Projector
         $user->setRoles($event->roles());
         $user->setEnabled($event->isEnabled());
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UserHasBeenDeleted $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserHasBeenDeleted(UserHasBeenDeleted $event): void
     {
@@ -74,16 +82,16 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UserHasBeenReactivated $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserHasBeenReactivated(UserHasBeenReactivated $event): void
     {
@@ -91,17 +99,17 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $user->setArchived(false);
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UsernameHasBeenChanged $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUsernameHasBeenChanged(UsernameHasBeenChanged $event): void
     {
@@ -109,17 +117,17 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $user->setUsername($event->username());
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UserPasswordHasBeenChanged $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserPasswordHasBeenChanged(UserPasswordHasBeenChanged $event): void
     {
@@ -127,17 +135,17 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $user->setPassword($event->password());
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
      * @param UserProfileHasBeenChanged $event
-     * @throws \Exception
+     * @throws Exception
      */
     protected function onUserProfileHasBeenChanged(UserProfileHasBeenChanged $event): void
     {
@@ -145,16 +153,16 @@ final class UserProjector extends Projector
         $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id: %s not found.', $event->aggregateId()));
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
         }
 
         $user->setProfile($event->profile());
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush($user);
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     protected function truncateTable(): void
     {

@@ -9,6 +9,8 @@ use App\Model\Modflow\ModflowModel;
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class CloneModflowModelCommandHandler
 {
@@ -22,7 +24,7 @@ class CloneModflowModelCommandHandler
 
     /**
      * @param CloneModflowModelCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(CloneModflowModelCommand $command)
     {
@@ -33,19 +35,19 @@ class CloneModflowModelCommandHandler
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $userId]);
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with id %s not found.', $userId));
+            throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
         $original = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $originId]);
 
         if (!$original instanceof ModflowModel) {
-            throw new \Exception('ModflowModel not found');
+            throw new RuntimeException('ModflowModel not found');
         }
 
         # The user needs to be the owner of the model or the model has to be public
         $canBeCloned = ($userId === $original->userId() || true === $original->isPublic());
         if (!$canBeCloned) {
-            throw new \Exception('The ModflowModel cannot be cloned due to permission problems.');
+            throw new RuntimeException('The ModflowModel cannot be cloned due to permission problems.');
         }
 
         /** @var ModflowModel $clone */

@@ -6,13 +6,14 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\UpdateVariableDensityCommand;
 use App\Model\Modflow\ModflowModel;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use RuntimeException;
 
 class UpdateVariableDensityCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -41,6 +42,6 @@ class UpdateVariableDensityCommandHandler
 
         $modflowModel->setVariableDensity($command->variableDensity());
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush();
+        $this->entityManager->flush($modflowModel);
     }
 }

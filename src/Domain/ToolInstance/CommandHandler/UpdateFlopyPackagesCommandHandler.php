@@ -6,11 +6,14 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\UpdateFlopyPackagesCommand;
 use App\Model\Modflow\ModflowModel;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 
 class UpdateFlopyPackagesCommandHandler
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManager */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -20,7 +23,7 @@ class UpdateFlopyPackagesCommandHandler
 
     /**
      * @param UpdateFlopyPackagesCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(UpdateFlopyPackagesCommand $command)
     {
@@ -30,15 +33,15 @@ class UpdateFlopyPackagesCommandHandler
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
 
         if (!$modflowModel instanceof ModflowModel) {
-            throw new \Exception('ModflowModel not found');
+            throw new RuntimeException('ModflowModel not found');
         }
 
         if ($modflowModel->userId() !== $userId) {
-            throw new \Exception('The Model cannot be updated due to permission problems.');
+            throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
         $modflowModel->setPackages($command->packages());
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush();
+        $this->entityManager->flush($modflowModel);
     }
 }
