@@ -6,6 +6,7 @@ namespace App\Tests\Model\Boundary;
 
 use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Boundary\RiverBoundary;
+use Exception;
 use GeoJson\Feature\Feature;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -14,12 +15,12 @@ use Swaggest\JsonSchema\Schema;
 class RiverBoundaryTest extends TestCase
 {
 
-    private $riverBoundaryJson;
+    private array $riverBoundaryJson;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->riverBoundaryJson = [
             'type' => "FeatureCollection",
@@ -59,33 +60,33 @@ class RiverBoundaryTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function it_validates_the_river_boundary_schema_successfully(): void
     {
         $schema = 'https://schema.inowas.com/modflow/boundary/riverBoundary.json';
         $schema = Schema::import($schema);
-        $object = json_decode(json_encode($this->riverBoundaryJson), false);
+        $object = json_decode(json_encode($this->riverBoundaryJson, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $riverBoundary = BoundaryFactory::fromArray($this->riverBoundaryJson);
-        $object = json_decode(json_encode($riverBoundary->jsonSerialize()), false);
+        $object = json_decode(json_encode($riverBoundary->jsonSerialize(), JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function it_creates_a_river_boundary_from_json(): void
     {
         /** @var RiverBoundary $riverBoundary */
         $riverBoundary = BoundaryFactory::fromArray($this->riverBoundaryJson);
-        $this->assertInstanceOf(RiverBoundary::class, $riverBoundary);
-        $this->assertInstanceOf(Feature::class, $riverBoundary->river());
-        $this->assertCount(1, $riverBoundary->observationPoints());
-        $this->assertEquals($this->riverBoundaryJson, $riverBoundary->jsonSerialize());
+        self::assertInstanceOf(RiverBoundary::class, $riverBoundary);
+        self::assertInstanceOf(Feature::class, $riverBoundary->river());
+        self::assertCount(1, $riverBoundary->observationPoints());
+        self::assertEquals($this->riverBoundaryJson, $riverBoundary->jsonSerialize());
     }
 }

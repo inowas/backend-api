@@ -19,7 +19,7 @@ class MessageBoxControllerTest extends CommandTestBaseClass
             json_encode([], JSON_THROW_ON_ERROR)
         );
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        self::assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -34,6 +34,6 @@ class MessageBoxControllerTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(322, $response->getStatusCode());
+        self::assertEquals(322, $response->getStatusCode());
     }
 }

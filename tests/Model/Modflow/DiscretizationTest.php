@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Model\Modflow;
+namespace App\Tests\Model\Modflow;
 
 use App\Model\Modflow\Discretization;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ class DiscretizationTest extends TestCase
     private float $rotation;
     private float $intersection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->geometry = [
             'type' => 'Polygon',
@@ -67,16 +67,16 @@ class DiscretizationTest extends TestCase
     public function can_be_instantiated_from_params(): void
     {
         $disc = Discretization::fromParams($this->geometry, $this->boundingBox, $this->gridSize, $this->cells, $this->stressperiods, $this->lengthUnit, $this->timeUnit, $this->intersection, $this->rotation);
-        $this->assertInstanceOf(Discretization::class, $disc);
-        $this->assertEquals($this->geometry, $disc->geometry());
-        $this->assertEquals($this->boundingBox, $disc->boundingBox());
-        $this->assertEquals($this->gridSize, $disc->gridSize());
-        $this->assertEquals($this->cells, $disc->cells());
-        $this->assertEquals($this->stressperiods, $disc->stressperiods());
-        $this->assertEquals($this->timeUnit, $disc->timeUnit());
-        $this->assertEquals($this->lengthUnit, $disc->lengthUnit());
-        $this->assertEquals($this->rotation, $disc->rotation());
-        $this->assertEquals($this->intersection, $disc->intersection());
+        self::assertInstanceOf(Discretization::class, $disc);
+        self::assertEquals($this->geometry, $disc->geometry());
+        self::assertEquals($this->boundingBox, $disc->boundingBox());
+        self::assertEquals($this->gridSize, $disc->gridSize());
+        self::assertEquals($this->cells, $disc->cells());
+        self::assertEquals($this->stressperiods, $disc->stressperiods());
+        self::assertEquals($this->timeUnit, $disc->timeUnit());
+        self::assertEquals($this->lengthUnit, $disc->lengthUnit());
+        self::assertEquals($this->rotation, $disc->rotation());
+        self::assertEquals($this->intersection, $disc->intersection());
     }
 
     /**
@@ -98,7 +98,7 @@ class DiscretizationTest extends TestCase
         ];
 
         $disc = Discretization::fromArray($arr);
-        $this->assertEquals($arr, $disc->toArray());
+        self::assertEquals($arr, $disc->toArray());
     }
 
     /**
@@ -120,14 +120,14 @@ class DiscretizationTest extends TestCase
         ];
 
         $disc = Discretization::fromArray($arr1);
-        $this->assertTrue($disc->isEqualTo(Discretization::fromArray($arr2)));
+        self::assertTrue($disc->isEqualTo(Discretization::fromArray($arr2)));
 
         $arr2['time_unit'] = 3;
-        $this->assertFalse($disc->isEqualTo(Discretization::fromArray($arr2)));
+        self::assertFalse($disc->isEqualTo(Discretization::fromArray($arr2)));
 
         $arr2 = $arr1;
         $arr2['stressperiods']['stressperiods']['totim_start'] = 1;
-        $this->assertFalse($disc->isEqualTo(Discretization::fromArray($arr2)));
+        self::assertFalse($disc->isEqualTo(Discretization::fromArray($arr2)));
     }
 
     /**
@@ -148,11 +148,11 @@ class DiscretizationTest extends TestCase
         ];
 
         $arr2['geometry']['coordinates'] = [[5, 5], [5, 6], [5, 7], [5, 6]];
-        $this->assertEquals(['geometry' => ['coordinates' => ["3" => ["1" => 6]]]], Discretization::fromArray($arr1)->diff(Discretization::fromArray($arr2)));
+        self::assertEquals(['geometry' => ['coordinates' => ["3" => ["1" => 6]]]], Discretization::fromArray($arr1)->diff(Discretization::fromArray($arr2)));
 
         $arr2 = $arr1;
         $arr2['stressperiods']['stressperiods']['totim_start'] = 1;
-        $this->assertEquals(['stressperiods' => ['stressperiods' => ['totim_start' => 1]]], Discretization::fromArray($arr1)->diff(Discretization::fromArray($arr2)));
+        self::assertEquals(['stressperiods' => ['stressperiods' => ['totim_start' => 1]]], Discretization::fromArray($arr1)->diff(Discretization::fromArray($arr2)));
     }
 
     /**
@@ -176,7 +176,7 @@ class DiscretizationTest extends TestCase
 
         $disc = Discretization::fromArray($arr1);
         $diff = $disc->diff(Discretization::fromArray($arr2));
-        $this->assertEquals($arr2, $disc->merge($diff)->toArray());
+        self::assertEquals($arr2, $disc->merge($diff)->toArray());
     }
 
     /**
@@ -201,10 +201,10 @@ class DiscretizationTest extends TestCase
         $expected = ['geometry' => $arr2['geometry']];
         $disc = Discretization::fromArray($arr1);
         $diff = $disc->array_shallow_diff(Discretization::fromArray($arr2));
-        $this->assertEquals($expected, $diff);
+        self::assertEquals($expected, $diff);
 
         /** @var Discretization $disc * */
         $disc = $disc->array_merge_shallow_diff($diff);
-        $this->assertEquals($arr2['geometry'], $disc->geometry());
+        self::assertEquals($arr2['geometry'], $disc->geometry());
     }
 }

@@ -6,6 +6,7 @@ namespace App\Tests\Model\Boundary;
 
 use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Boundary\WellBoundary;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Swaggest\JsonSchema\Schema;
@@ -13,12 +14,12 @@ use Swaggest\JsonSchema\Schema;
 class WellBoundaryTest extends TestCase
 {
 
-    private $wellBoundaryJson;
+    private array $wellBoundaryJson;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->wellBoundaryJson = [
             'id' => Uuid::uuid4()->toString(),
@@ -40,43 +41,43 @@ class WellBoundaryTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_validates_the_well_boundary_schema_successfully()
+    public function it_validates_the_well_boundary_schema_successfully(): void
     {
         $schema = __DIR__.'/../../../schema/modflow/boundary/wellBoundary.json';
         $schema = Schema::import($schema);
-        $object = json_decode(json_encode($this->wellBoundaryJson), false);
+        $object = json_decode(json_encode($this->wellBoundaryJson, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $wellBoundary = BoundaryFactory::fromArray($this->wellBoundaryJson);
-        $object = json_decode(json_encode($wellBoundary->jsonSerialize()), false);
+        $object = json_decode(json_encode($wellBoundary->jsonSerialize(), JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function it_creates_a_well_from_json()
     {
         /** @var WellBoundary $wellBoundary */
         $wellBoundary = BoundaryFactory::fromArray($this->wellBoundaryJson);
-        $this->assertInstanceOf(WellBoundary::class, $wellBoundary);
-        $this->assertEquals($this->wellBoundaryJson['id'], $wellBoundary->getId());
-        $this->assertEquals($this->wellBoundaryJson['type'], $wellBoundary->getType());
+        self::assertInstanceOf(WellBoundary::class, $wellBoundary);
+        self::assertEquals($this->wellBoundaryJson['id'], $wellBoundary->getId());
+        self::assertEquals($this->wellBoundaryJson['type'], $wellBoundary->getType());
 
-        $this->assertEquals($this->wellBoundaryJson['geometry']['type'], $wellBoundary->geometry()->getType());
-        $this->assertEquals($this->wellBoundaryJson['geometry']['coordinates'], $wellBoundary->geometry()->getCoordinates());
-        $this->assertEquals($this->wellBoundaryJson['properties'], $wellBoundary->getProperties());
-        $this->assertEquals($this->wellBoundaryJson['properties']['type'], $wellBoundary->type());
-        $this->assertEquals($this->wellBoundaryJson['properties']['well_type'], $wellBoundary->wellType());
-        $this->assertEquals($this->wellBoundaryJson['properties']['layers'], $wellBoundary->layers());
-        $this->assertEquals($this->wellBoundaryJson['properties']['cells'], $wellBoundary->cells());
-        $this->assertEquals($this->wellBoundaryJson['properties']['sp_values'], $wellBoundary->spValues());
-        $this->assertEquals($this->wellBoundaryJson, $wellBoundary->jsonSerialize());
+        self::assertEquals($this->wellBoundaryJson['geometry']['type'], $wellBoundary->geometry()->getType());
+        self::assertEquals($this->wellBoundaryJson['geometry']['coordinates'], $wellBoundary->geometry()->getCoordinates());
+        self::assertEquals($this->wellBoundaryJson['properties'], $wellBoundary->getProperties());
+        self::assertEquals($this->wellBoundaryJson['properties']['type'], $wellBoundary->type());
+        self::assertEquals($this->wellBoundaryJson['properties']['well_type'], $wellBoundary->wellType());
+        self::assertEquals($this->wellBoundaryJson['properties']['layers'], $wellBoundary->layers());
+        self::assertEquals($this->wellBoundaryJson['properties']['cells'], $wellBoundary->cells());
+        self::assertEquals($this->wellBoundaryJson['properties']['sp_values'], $wellBoundary->spValues());
+        self::assertEquals($this->wellBoundaryJson, $wellBoundary->jsonSerialize());
     }
 
 }

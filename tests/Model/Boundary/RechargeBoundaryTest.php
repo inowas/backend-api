@@ -6,6 +6,7 @@ namespace App\Tests\Model\Boundary;
 
 use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Boundary\RechargeBoundary;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Swaggest\JsonSchema\Schema;
@@ -13,12 +14,12 @@ use Swaggest\JsonSchema\Schema;
 class RechargeBoundaryTest extends TestCase
 {
 
-    private $rechargeBoundaryJson;
+    private array $rechargeBoundaryJson;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->rechargeBoundaryJson = [
             'id' => Uuid::uuid4()->toString(),
@@ -41,41 +42,41 @@ class RechargeBoundaryTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_validates_the_recharge_boundary_schema_successfully()
+    public function it_validates_the_recharge_boundary_schema_successfully(): void
     {
         $schema = 'https://schema.inowas.com/modflow/boundary/rechargeBoundary.json';
         $schema = Schema::import($schema);
-        $object = json_decode(json_encode($this->rechargeBoundaryJson), false);
+        $object = json_decode(json_encode($this->rechargeBoundaryJson, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $wellBoundary = BoundaryFactory::fromArray($this->rechargeBoundaryJson);
-        $object = json_decode(json_encode($wellBoundary->jsonSerialize()), false);
+        $object = json_decode(json_encode($wellBoundary->jsonSerialize(), JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function it_creates_a_recharge_boundary_from_json()
     {
         /** @var RechargeBoundary $rechargeBoundary */
         $rechargeBoundary = BoundaryFactory::fromArray($this->rechargeBoundaryJson);
-        $this->assertInstanceOf(RechargeBoundary::class, $rechargeBoundary);
-        $this->assertEquals($this->rechargeBoundaryJson['id'], $rechargeBoundary->getId());
-        $this->assertEquals($this->rechargeBoundaryJson['type'], $rechargeBoundary->getType());
+        self::assertInstanceOf(RechargeBoundary::class, $rechargeBoundary);
+        self::assertEquals($this->rechargeBoundaryJson['id'], $rechargeBoundary->getId());
+        self::assertEquals($this->rechargeBoundaryJson['type'], $rechargeBoundary->getType());
 
-        $this->assertEquals($this->rechargeBoundaryJson['geometry']['type'], $rechargeBoundary->geometry()->getType());
-        $this->assertEquals($this->rechargeBoundaryJson['geometry']['coordinates'], $rechargeBoundary->geometry()->getCoordinates());
-        $this->assertEquals($this->rechargeBoundaryJson['properties'], $rechargeBoundary->getProperties());
-        $this->assertEquals($this->rechargeBoundaryJson['properties']['type'], $rechargeBoundary->type());
-        $this->assertEquals($this->rechargeBoundaryJson['properties']['layers'], $rechargeBoundary->layers());
-        $this->assertEquals($this->rechargeBoundaryJson['properties']['cells'], $rechargeBoundary->cells());
-        $this->assertEquals($this->rechargeBoundaryJson['properties']['sp_values'], $rechargeBoundary->spValues());
-        $this->assertEquals($this->rechargeBoundaryJson, $rechargeBoundary->jsonSerialize());
+        self::assertEquals($this->rechargeBoundaryJson['geometry']['type'], $rechargeBoundary->geometry()->getType());
+        self::assertEquals($this->rechargeBoundaryJson['geometry']['coordinates'], $rechargeBoundary->geometry()->getCoordinates());
+        self::assertEquals($this->rechargeBoundaryJson['properties'], $rechargeBoundary->getProperties());
+        self::assertEquals($this->rechargeBoundaryJson['properties']['type'], $rechargeBoundary->type());
+        self::assertEquals($this->rechargeBoundaryJson['properties']['layers'], $rechargeBoundary->layers());
+        self::assertEquals($this->rechargeBoundaryJson['properties']['cells'], $rechargeBoundary->cells());
+        self::assertEquals($this->rechargeBoundaryJson['properties']['sp_values'], $rechargeBoundary->spValues());
+        self::assertEquals($this->rechargeBoundaryJson, $rechargeBoundary->jsonSerialize());
     }
 }

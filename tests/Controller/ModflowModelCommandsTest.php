@@ -68,18 +68,18 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = $this->em->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
-        $this->assertInstanceOf(ModflowModel::class, $modflowModel);
-        $this->assertEquals('T03', $modflowModel->tool());
-        $this->assertEquals($command['payload']['name'], $modflowModel->name());
-        $this->assertEquals($command['payload']['description'], $modflowModel->description());
-        $this->assertEquals($command['payload']['public'], $modflowModel->isPublic());
-        $this->assertEquals($user->getId()->toString(), $modflowModel->userId());
+        self::assertInstanceOf(ModflowModel::class, $modflowModel);
+        self::assertEquals('T03', $modflowModel->tool());
+        self::assertEquals($command['payload']['name'], $modflowModel->name());
+        self::assertEquals($command['payload']['description'], $modflowModel->description());
+        self::assertEquals($command['payload']['public'], $modflowModel->isPublic());
+        self::assertEquals($user->getId()->toString(), $modflowModel->userId());
 
-        $this->assertInstanceOf(Discretization::class, $modflowModel->discretization());
+        self::assertInstanceOf(Discretization::class, $modflowModel->discretization());
         $expected = Discretization::fromParams(
             $command['payload']['geometry'],
             $command['payload']['bounding_box'],
@@ -91,7 +91,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
             $command['payload']['intersection'],
             $command['payload']['rotation'],
         );
-        $this->assertEquals($expected, $modflowModel->discretization());
+        self::assertEquals($expected, $modflowModel->discretization());
     }
 
     /**
@@ -117,17 +117,17 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertInstanceOf(ModflowModel::class, $modflowModel);
+        self::assertInstanceOf(ModflowModel::class, $modflowModel);
 
-        $this->assertEquals('T03', $modflowModel->tool());
-        $this->assertEquals($command['payload']['name'], $modflowModel->name());
-        $this->assertEquals($command['payload']['description'], $modflowModel->description());
-        $this->assertEquals($command['payload']['public'], $modflowModel->isPublic());
-        $this->assertEquals($user->getId()->toString(), $modflowModel->getUser()->getId()->toString());
+        self::assertEquals('T03', $modflowModel->tool());
+        self::assertEquals($command['payload']['name'], $modflowModel->name());
+        self::assertEquals($command['payload']['description'], $modflowModel->description());
+        self::assertEquals($command['payload']['public'], $modflowModel->isPublic());
+        self::assertEquals($user->getId()->toString(), $modflowModel->getUser()->getId()->toString());
     }
 
     /**
@@ -182,15 +182,15 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertInstanceOf(ModflowModel::class, $modflowModel);
+        self::assertInstanceOf(ModflowModel::class, $modflowModel);
 
-        $this->assertEquals('T03', $modflowModel->tool());
-        $this->assertEquals($user->getId()->toString(), $modflowModel->getUser()->getId()->toString());
-        $this->assertInstanceOf(Discretization::class, $modflowModel->discretization());
+        self::assertEquals('T03', $modflowModel->tool());
+        self::assertEquals($user->getId()->toString(), $modflowModel->getUser()->getId()->toString());
+        self::assertInstanceOf(Discretization::class, $modflowModel->discretization());
         $expected = Discretization::fromParams(
             $command['payload']['geometry'],
             $command['payload']['bounding_box'],
@@ -202,7 +202,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
             $command['payload']['intersection'],
             $command['payload']['rotation']
         );
-        $this->assertEquals($expected, $modflowModel->discretization());
+        self::assertEquals($expected, $modflowModel->discretization());
     }
 
     /**
@@ -237,13 +237,13 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertInstanceOf(ModflowModel::class, $modflowModel);
-        $this->assertInstanceOf(Discretization::class, $modflowModel->discretization());
-        $this->assertEquals($command['payload']['stressperiods'], $modflowModel->discretization()->stressperiods());
+        self::assertInstanceOf(ModflowModel::class, $modflowModel);
+        self::assertInstanceOf(Discretization::class, $modflowModel->discretization());
+        self::assertEquals($command['payload']['stressperiods'], $modflowModel->discretization()->stressperiods());
     }
 
     /**
@@ -270,7 +270,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $original */
         $original = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
@@ -278,8 +278,8 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
         /** @var ModflowModel $clone */
         $clone = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($cloneId);
 
-        $this->assertEquals($clone->toArray(), $original->toArray());
-        $this->assertFalse($clone->isScenario());
+        self::assertEquals($clone->toArray(), $original->toArray());
+        self::assertFalse($clone->isScenario());
     }
 
     /**
@@ -306,7 +306,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $original */
         $original = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
@@ -314,8 +314,8 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
         /** @var ModflowModel $clone */
         $clone = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($cloneId);
 
-        $this->assertEquals($clone->toArray(), $original->toArray());
-        $this->assertTrue($clone->isScenario());
+        self::assertEquals($clone->toArray(), $original->toArray());
+        self::assertTrue($clone->isScenario());
     }
 
     /**
@@ -326,7 +326,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
     {
         $user = $this->createRandomUser();
         $model = $this->createRandomModflowModel($user);
-        $this->assertFalse($model->isArchived());
+        self::assertFalse($model->isArchived());
 
         $command = [
             'uuid' => Uuid::uuid4()->toString(),
@@ -339,11 +339,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertTrue($modflowModel->isArchived());
+        self::assertTrue($modflowModel->isArchived());
     }
 
     /**
@@ -384,11 +384,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($modelId);
-        $this->assertEquals($command['payload']['boundary'], $modflowModel->boundaries()->findById($boundaryId)->toArray());
+        self::assertEquals($command['payload']['boundary'], $modflowModel->boundaries()->findById($boundaryId)->toArray());
     }
 
     /**
@@ -430,12 +430,12 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
         $expected = [$command['payload']['boundary']['id'] => $command['payload']['boundary']];
-        $this->assertEquals($expected, $modflowModel->boundaries()->toArray());
+        self::assertEquals($expected, $modflowModel->boundaries()->toArray());
     }
 
     /**
@@ -460,11 +460,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertCount(0, $modflowModel->boundaries()->toArray());
+        self::assertCount(0, $modflowModel->boundaries()->toArray());
     }
 
     /**
@@ -505,11 +505,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($modelId);
-        $this->assertEquals($command['payload']['layer'], $modflowModel->soilmodel()->findLayer($layerId)->toArray());
+        self::assertEquals($command['payload']['layer'], $modflowModel->soilmodel()->findLayer($layerId)->toArray());
     }
 
     /**
@@ -549,11 +549,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertEquals($command['payload']['layer'], $modflowModel->soilmodel()->findLayer($layerId)->toArray());
+        self::assertEquals($command['payload']['layer'], $modflowModel->soilmodel()->findLayer($layerId)->toArray());
     }
 
     /**
@@ -581,11 +581,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertCount(2, $modflowModel->soilmodel()->layers());
+        self::assertCount(2, $modflowModel->soilmodel()->layers());
     }
 
 
@@ -611,11 +611,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertNull($modflowModel->soilmodel()->findLayer($layerId));
+        self::assertNull($modflowModel->soilmodel()->findLayer($layerId));
     }
 
     /**
@@ -639,11 +639,11 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $modflowModel */
         $modflowModel = self::$container->get('doctrine')->getRepository(ModflowModel::class)->findOneById($model->id());
-        $this->assertEquals($command['payload']['properties'], $modflowModel->soilmodel()->properties());
+        self::assertEquals($command['payload']['properties'], $modflowModel->soilmodel()->properties());
     }
 
     /**

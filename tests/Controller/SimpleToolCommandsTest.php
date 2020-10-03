@@ -31,16 +31,16 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $simpleTool */
         $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $toolInstanceId]);
-        $this->assertEquals($command['payload']['tool'], $simpleTool->tool());
-        $this->assertEquals($command['payload']['name'], $simpleTool->name());
-        $this->assertEquals($command['payload']['description'], $simpleTool->description());
-        $this->assertEquals($command['payload']['public'], $simpleTool->isPublic());
-        $this->assertEquals($command['payload']['data'], $simpleTool->data());
-        $this->assertEquals($user->getId()->toString(), $simpleTool->userId());
+        self::assertEquals($command['payload']['tool'], $simpleTool->tool());
+        self::assertEquals($command['payload']['name'], $simpleTool->name());
+        self::assertEquals($command['payload']['description'], $simpleTool->description());
+        self::assertEquals($command['payload']['public'], $simpleTool->isPublic());
+        self::assertEquals($command['payload']['data'], $simpleTool->data());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
     }
 
     /**
@@ -68,16 +68,16 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user2->getUsername(), $user2->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $clone */
         $clone = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $cloneId]);
-        $this->assertEquals($simpleTool->tool(), $clone->tool());
-        $this->assertEquals($simpleTool->name() . ' (clone)', $clone->name());
-        $this->assertEquals($simpleTool->description(), $clone->description());
-        $this->assertEquals($simpleTool->isPublic(), $clone->isPublic());
-        $this->assertEquals($simpleTool->data(), $clone->data());
-        $this->assertEquals($user2->getId()->toString(), $clone->userId());
+        self::assertEquals($simpleTool->tool(), $clone->tool());
+        self::assertEquals($simpleTool->name() . ' (clone)', $clone->name());
+        self::assertEquals($simpleTool->description(), $clone->description());
+        self::assertEquals($simpleTool->isPublic(), $clone->isPublic());
+        self::assertEquals($simpleTool->data(), $clone->data());
+        self::assertEquals($user2->getId()->toString(), $clone->userId());
     }
 
     /**
@@ -104,15 +104,15 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $simpleTool */
         $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $simpleTool->id()]);
-        $this->assertEquals($command['payload']['name'], $simpleTool->name());
-        $this->assertEquals($command['payload']['description'], $simpleTool->description());
-        $this->assertEquals($command['payload']['public'], $simpleTool->isPublic());
-        $this->assertEquals($command['payload']['data'], $simpleTool->data());
-        $this->assertEquals($user->getId()->toString(), $simpleTool->userId());
+        self::assertEquals($command['payload']['name'], $simpleTool->name());
+        self::assertEquals($command['payload']['description'], $simpleTool->description());
+        self::assertEquals($command['payload']['public'], $simpleTool->isPublic());
+        self::assertEquals($command['payload']['data'], $simpleTool->data());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
     }
 
     /**
@@ -139,14 +139,14 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $simpleTool */
         $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $simpleTool->id()]);
-        $this->assertEquals($command['payload']['name'], $simpleTool->name());
-        $this->assertEquals($command['payload']['description'], $simpleTool->description());
-        $this->assertEquals($command['payload']['public'], $simpleTool->isPublic());
-        $this->assertEquals($user->getId()->toString(), $simpleTool->userId());
+        self::assertEquals($command['payload']['name'], $simpleTool->name());
+        self::assertEquals($command['payload']['description'], $simpleTool->description());
+        self::assertEquals($command['payload']['public'], $simpleTool->isPublic());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
     }
 
     /**
@@ -171,12 +171,12 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $simpleTool */
         $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $simpleTool->id()]);
-        $this->assertEquals($command['payload']['data'], $simpleTool->data());
-        $this->assertEquals($user->getId()->toString(), $simpleTool->userId());
+        self::assertEquals($command['payload']['data'], $simpleTool->data());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
     }
 
     /**
@@ -199,10 +199,10 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var SimpleTool $simpleTool */
         $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $simpleTool->id()]);
-        $this->assertTrue($simpleTool->isArchived());
+        self::assertTrue($simpleTool->isArchived());
     }
 }

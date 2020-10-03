@@ -6,6 +6,7 @@ namespace App\Tests\Model\Boundary;
 
 use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Boundary\ConstantHeadBoundary;
+use Exception;
 use GeoJson\Feature\Feature;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -14,12 +15,12 @@ use Swaggest\JsonSchema\Schema;
 class ConstantHeadBoundaryTest extends TestCase
 {
 
-    private $constantHeadBoundaryJson;
+    private array $constantHeadBoundaryJson;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->constantHeadBoundaryJson = [
             'type' => "FeatureCollection",
@@ -59,33 +60,33 @@ class ConstantHeadBoundaryTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_validates_the_constant_head_boundary_schema_successfully()
+    public function it_validates_the_constant_head_boundary_schema_successfully(): void
     {
         $schema = 'https://schema.inowas.com/modflow/boundary/constantHeadBoundary.json';
         $schema = Schema::import($schema);
-        $object = json_decode(json_encode($this->constantHeadBoundaryJson), false);
+        $object = json_decode(json_encode($this->constantHeadBoundaryJson, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $constantHeadBoundary = BoundaryFactory::fromArray($this->constantHeadBoundaryJson);
-        $object = json_decode(json_encode($constantHeadBoundary->jsonSerialize()), false);
+        $object = json_decode(json_encode($constantHeadBoundary->jsonSerialize(), JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_creates_a_constant_head_boundary_from_json()
+    public function it_creates_a_constant_head_boundary_from_json(): void
     {
         /** @var ConstantHeadBoundary $constantHeadBoundary */
         $constantHeadBoundary = BoundaryFactory::fromArray($this->constantHeadBoundaryJson);
-        $this->assertInstanceOf(ConstantHeadBoundary::class, $constantHeadBoundary);
-        $this->assertInstanceOf(Feature::class, $constantHeadBoundary->constantHeadBoundary());
-        $this->assertCount(1, $constantHeadBoundary->observationPoints());
-        $this->assertEquals($this->constantHeadBoundaryJson, $constantHeadBoundary->jsonSerialize());
+        self::assertInstanceOf(ConstantHeadBoundary::class, $constantHeadBoundary);
+        self::assertInstanceOf(Feature::class, $constantHeadBoundary->constantHeadBoundary());
+        self::assertCount(1, $constantHeadBoundary->observationPoints());
+        self::assertEquals($this->constantHeadBoundaryJson, $constantHeadBoundary->jsonSerialize());
     }
 }

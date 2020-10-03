@@ -13,9 +13,9 @@ class ToolMetadataTest extends TestCase
     public function can_be_instantiated_from_params(): void
     {
         $toolMetadata = ToolMetadata::fromParams('name', 'desc', false);
-        $this->assertEquals('name', $toolMetadata->name());
-        $this->assertEquals('desc', $toolMetadata->description());
-        $this->assertFalse($toolMetadata->isPublic());
+        self::assertEquals('name', $toolMetadata->name());
+        self::assertEquals('desc', $toolMetadata->description());
+        self::assertFalse($toolMetadata->isPublic());
     }
 
     /**
@@ -31,9 +31,9 @@ class ToolMetadataTest extends TestCase
         ];
 
         $toolMetadata = ToolMetadata::fromArray($arr);
-        $this->assertEquals($arr['name'], $toolMetadata->name());
-        $this->assertEquals($arr['description'], $toolMetadata->description());
-        $this->assertEquals($arr['public'], $toolMetadata->isPublic());
+        self::assertEquals($arr['name'], $toolMetadata->name());
+        self::assertEquals($arr['description'], $toolMetadata->description());
+        self::assertEquals($arr['public'], $toolMetadata->isPublic());
     }
 
     /**
@@ -49,7 +49,7 @@ class ToolMetadataTest extends TestCase
         ];
 
         $toolMetadata = ToolMetadata::fromArray($arr);
-        $this->assertEquals($arr, $toolMetadata->toArray());
+        self::assertEquals($arr, $toolMetadata->toArray());
     }
 
     /**
@@ -71,7 +71,7 @@ class ToolMetadataTest extends TestCase
         ];
 
         $toolMetadata = ToolMetadata::fromArray($arr1);
-        $this->assertTrue($toolMetadata->isEqualTo(ToolMetadata::fromArray($arr2)));
+        self::assertTrue($toolMetadata->isEqualTo(ToolMetadata::fromArray($arr2)));
 
         $arr2 = [
             'description' => 'description2',
@@ -79,7 +79,7 @@ class ToolMetadataTest extends TestCase
             'name' => 'name1'
         ];
 
-        $this->assertFalse($toolMetadata->isEqualTo(ToolMetadata::fromArray($arr2)));
+        self::assertFalse($toolMetadata->isEqualTo(ToolMetadata::fromArray($arr2)));
     }
 
 
@@ -102,7 +102,7 @@ class ToolMetadataTest extends TestCase
 
         $toolMetadata = ToolMetadata::fromArray($arr1);
         $expected = ['name' => 'name2', 'public' => true];
-        $this->assertEquals($expected, $toolMetadata->diff(ToolMetadata::fromArray($arr2)));
+        self::assertEquals($expected, $toolMetadata->diff(ToolMetadata::fromArray($arr2)));
     }
 
     /**
@@ -124,6 +124,6 @@ class ToolMetadataTest extends TestCase
 
         $toolMetadata = ToolMetadata::fromArray($arr1);
         $diff = $toolMetadata->diff(ToolMetadata::fromArray($arr2));
-        $this->assertEquals($arr2, $toolMetadata->merge($diff)->toArray());
+        self::assertEquals($arr2, $toolMetadata->merge($diff)->toArray());
     }
 }

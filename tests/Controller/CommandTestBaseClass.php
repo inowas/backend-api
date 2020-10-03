@@ -27,7 +27,6 @@ class CommandTestBaseClass extends WebTestCase
     }
 
     /**
-     * @param EntityManager $em
      * @return User
      * @throws ORMException
      * @throws OptimisticLockException
@@ -101,13 +100,12 @@ class CommandTestBaseClass extends WebTestCase
             json_encode(["username" => $username, "password" => $password], JSON_THROW_ON_ERROR)
         );
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
         $content = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         return $content['token'];
     }
 
     /**
-     * @param $client
      * @param $endpoint
      * @param $command
      * @param null $token

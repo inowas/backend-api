@@ -31,12 +31,12 @@ class UserCommandsTest extends CommandTestBaseClass
             ], JSON_THROW_ON_ERROR)
         );
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        self::assertEquals(202, $client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($email);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals(['ROLE_USER'], $user->getRoles());
+        self::assertInstanceOf(User::class, $user);
+        self::assertEquals(['ROLE_USER'], $user->getRoles());
         return ['username' => $user->getUsername(), 'password' => $password];
     }
 
@@ -61,12 +61,12 @@ class UserCommandsTest extends CommandTestBaseClass
         ];
         $token = $this->getToken($username, $password);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($newUserName);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals($newUserName, $user->getUsername());
+        self::assertInstanceOf(User::class, $user);
+        self::assertEquals($newUserName, $user->getUsername());
 
         return ['username' => $newUserName, 'password' => $password];
     }
@@ -94,12 +94,12 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($username, $password);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals($newPassword, $user->getPassword());
+        self::assertInstanceOf(User::class, $user);
+        self::assertEquals($newPassword, $user->getPassword());
 
         return ['username' => $username, 'password' => $newPassword];
     }
@@ -129,12 +129,12 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($username, $password);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals($profile, $user->getProfile());
+        self::assertInstanceOf(User::class, $user);
+        self::assertEquals($profile, $user->getProfile());
 
         return ['username' => $username, 'password' => $password];
     }
@@ -157,12 +157,12 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($username, $password);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertTrue($user->isArchived());
+        self::assertInstanceOf(User::class, $user);
+        self::assertTrue($user->isArchived());
 
         return ['username' => $username, 'password' => $password];
     }
@@ -185,12 +185,12 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($username, $password);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertFalse($user->isArchived());
+        self::assertInstanceOf(User::class, $user);
+        self::assertFalse($user->isArchived());
 
         return ['username' => $username, 'password' => $password];
     }
@@ -220,10 +220,11 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken('super_admin', 'admin');
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
-        $this->assertEquals(202, $response->getStatusCode());
+        self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $this->assertNull($user);
+        self::assertNull($user);
     }
 }
+

@@ -6,6 +6,7 @@ namespace App\Tests\Model\Boundary;
 
 use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Boundary\GeneralHeadBoundary;
+use Exception;
 use GeoJson\Feature\Feature;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -14,12 +15,12 @@ use Swaggest\JsonSchema\Schema;
 class GeneralHeadBoundaryTest extends TestCase
 {
 
-    private $generalHeadHeadBoundaryJson;
+    private array $generalHeadHeadBoundaryJson;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->generalHeadHeadBoundaryJson = [
             'type' => "FeatureCollection",
@@ -59,33 +60,33 @@ class GeneralHeadBoundaryTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_validates_the_general_head_boundary_schema_successfully()
+    public function it_validates_the_general_head_boundary_schema_successfully(): void
     {
         $schema = 'https://schema.inowas.com/modflow/boundary/generalHeadBoundary.json';
         $schema = Schema::import($schema);
-        $object = json_decode(json_encode($this->generalHeadHeadBoundaryJson), false);
+        $object = json_decode(json_encode($this->generalHeadHeadBoundaryJson, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
 
         $generalHeadBoundary = BoundaryFactory::fromArray($this->generalHeadHeadBoundaryJson);
-        $object = json_decode(json_encode($generalHeadBoundary->jsonSerialize()), false);
+        $object = json_decode(json_encode($generalHeadBoundary->jsonSerialize(), JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR);
         $schema->in($object);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function it_creates_a_general_head_boundary_from_json()
+    public function it_creates_a_general_head_boundary_from_json(): void
     {
         /** @var GeneralHeadBoundary $generalHeadBoundary */
         $generalHeadBoundary = BoundaryFactory::fromArray($this->generalHeadHeadBoundaryJson);
-        $this->assertInstanceOf(GeneralHeadBoundary::class, $generalHeadBoundary);
-        $this->assertInstanceOf(Feature::class, $generalHeadBoundary->generalHeadBoundary());
-        $this->assertCount(1, $generalHeadBoundary->observationPoints());
-        $this->assertEquals($this->generalHeadHeadBoundaryJson, $generalHeadBoundary->jsonSerialize());
+        self::assertInstanceOf(GeneralHeadBoundary::class, $generalHeadBoundary);
+        self::assertInstanceOf(Feature::class, $generalHeadBoundary->generalHeadBoundary());
+        self::assertCount(1, $generalHeadBoundary->observationPoints());
+        self::assertEquals($this->generalHeadHeadBoundaryJson, $generalHeadBoundary->jsonSerialize());
     }
 }
