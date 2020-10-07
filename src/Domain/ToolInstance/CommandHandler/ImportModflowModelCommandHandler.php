@@ -49,6 +49,6 @@ class ImportModflowModelCommandHandler
         $modflowModel->setBoundaries($command->boundaries());
 
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

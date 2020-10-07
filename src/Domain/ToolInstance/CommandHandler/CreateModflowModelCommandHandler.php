@@ -43,6 +43,6 @@ class CreateModflowModelCommandHandler
         $modflowModel = ModflowModel::createWithParams($id, $user, 'T03', $metadata);
         $modflowModel->setDiscretization($discretization);
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

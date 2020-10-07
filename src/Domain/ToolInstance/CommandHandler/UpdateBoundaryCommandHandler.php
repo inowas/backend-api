@@ -45,6 +45,6 @@ final class UpdateBoundaryCommandHandler
         $modflowModel->setBoundaries($boundaries);
 
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

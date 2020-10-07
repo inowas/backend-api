@@ -7,8 +7,8 @@ namespace App\Command;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\ToolMetadata;
 use App\Model\User;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,7 +47,7 @@ class LoadDefaultTools extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -55,7 +55,7 @@ class LoadDefaultTools extends Command
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
 
         if (!$user instanceof User) {
-            throw new \Exception(sprintf('User with username %s not found.', $username));
+            throw new Exception(sprintf('User with username %s not found.', $username));
         }
 
         $simpleTools = $this->entityManager->getRepository(SimpleTool::class)->findBy(['user' => $user]);
@@ -63,7 +63,7 @@ class LoadDefaultTools extends Command
         foreach ($simpleTools as $simpleTool) {
             if ($simpleTool->name() === 'Default') {
                 $this->entityManager->remove($simpleTool);
-                $this->entityManager->flush($simpleTool);
+                $this->entityManager->flush();
                 $output->writeln(sprintf('Delete Default Tool %s', $simpleTool->tool()));
             }
         }
@@ -76,7 +76,7 @@ class LoadDefaultTools extends Command
                 continue;
             }
             $this->entityManager->persist($simpleTool);
-            $this->entityManager->flush($simpleTool);
+            $this->entityManager->flush();
             $output->writeln(sprintf('Create Default Tool %s', $simpleTool->tool()));
         }
     }
@@ -85,7 +85,7 @@ class LoadDefaultTools extends Command
      * @param string $tool
      * @param User $user
      * @return SimpleTool
-     * @throws \Exception
+     * @throws Exception
      */
     public function tools(string $tool, User $user): ?SimpleTool
     {

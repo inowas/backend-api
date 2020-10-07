@@ -52,7 +52,7 @@ class CreateScenarioAnalysisCommandHandler
         $scenarioAnalysis = ScenarioAnalysis::createWithBaseId($newModelId);
         $instance->setData($scenarioAnalysis->toArray());
         $this->entityManager->persist($instance);
-        $this->entityManager->flush($instance);
+        $this->entityManager->flush();
     }
 
     /**
@@ -77,6 +77,6 @@ class CreateScenarioAnalysisCommandHandler
         $name .= " (basemodel)";
         $clonedModel->setName($name);
         $this->entityManager->persist($clonedModel);
-        $this->entityManager->flush($clonedModel);
+        $this->entityManager->flush();
     }
 }

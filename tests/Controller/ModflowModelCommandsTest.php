@@ -744,7 +744,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
         $modflowModel->setSoilmodel($soilmodel);
 
         $em->persist($modflowModel);
-        $em->flush($modflowModel);
+        $em->flush();
 
         return $modflowModel;
     }

@@ -42,6 +42,6 @@ class UpdateVariableDensityCommandHandler
 
         $modflowModel->setVariableDensity($command->variableDensity());
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

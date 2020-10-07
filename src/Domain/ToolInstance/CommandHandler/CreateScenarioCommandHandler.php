@@ -56,7 +56,7 @@ class CreateScenarioCommandHandler
         $simpleTool->setData($scenarioAnalysis->toArray());
 
         $this->entityManager->persist($simpleTool);
-        $this->entityManager->flush($simpleTool);
+        $this->entityManager->flush();
     }
 
     /**
@@ -81,6 +81,6 @@ class CreateScenarioCommandHandler
         $name .= ' (clone)';
         $clonedModel->setName($name);
         $this->entityManager->persist($clonedModel);
-        $this->entityManager->flush($clonedModel);
+        $this->entityManager->flush();
     }
 }

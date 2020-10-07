@@ -56,7 +56,7 @@ final class UserProjector extends Projector
 
         $user->setArchived(true);
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -69,7 +69,7 @@ final class UserProjector extends Projector
         $user->setRoles($event->roles());
         $user->setEnabled($event->isEnabled());
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -86,7 +86,7 @@ final class UserProjector extends Projector
         }
 
         $this->entityManager->remove($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -104,7 +104,7 @@ final class UserProjector extends Projector
 
         $user->setArchived(false);
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -122,7 +122,7 @@ final class UserProjector extends Projector
 
         $user->setUsername($event->username());
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -140,7 +140,7 @@ final class UserProjector extends Projector
 
         $user->setPassword($event->password());
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**
@@ -158,7 +158,7 @@ final class UserProjector extends Projector
 
         $user->setProfile($event->profile());
         $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
+        $this->entityManager->flush();
     }
 
     /**

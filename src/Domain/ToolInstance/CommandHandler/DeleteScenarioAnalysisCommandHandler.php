@@ -41,6 +41,6 @@ class DeleteScenarioAnalysisCommandHandler
 
         $simpleTool->setIsArchived(true);
         $this->entityManager->persist($simpleTool);
-        $this->entityManager->flush($simpleTool);
+        $this->entityManager->flush();
     }
 }

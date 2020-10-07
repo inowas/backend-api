@@ -8,6 +8,7 @@ use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CommandTestBaseClass extends WebTestCase
 {
+    /** @var EntityManager|object|null  */
     protected ?EntityManager $em;
     protected ?KernelBrowser $client;
 
@@ -30,7 +32,7 @@ class CommandTestBaseClass extends WebTestCase
      * @return User
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function createRandomUser(): User
     {
@@ -39,7 +41,7 @@ class CommandTestBaseClass extends WebTestCase
         $password = sprintf('newUserPassword_%d', random_int(1000000, 10000000 - 1));
         $user = new User($username, $password, ['ROLE_USER']);
         $em->persist($user);
-        $em->flush($user);
+        $em->flush();
         return $user;
     }
 
@@ -62,7 +64,7 @@ class CommandTestBaseClass extends WebTestCase
 
         $em = $this->em;
         $em->persist($simpleTool);
-        $em->flush($simpleTool);
+        $em->flush();
         return $simpleTool;
     }
 
@@ -79,7 +81,7 @@ class CommandTestBaseClass extends WebTestCase
         $user = new User($username, $password, $roles);
         $em = $this->em;
         $em->persist($user);
-        $em->flush($user);
+        $em->flush();
         return $user;
     }
 

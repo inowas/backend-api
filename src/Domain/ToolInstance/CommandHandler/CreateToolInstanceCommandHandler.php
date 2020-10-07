@@ -58,6 +58,6 @@ class CreateToolInstanceCommandHandler
 
         $instance->setData($data);
         $this->entityManager->persist($instance);
-        $this->entityManager->flush($instance);
+        $this->entityManager->flush();
     }
 }

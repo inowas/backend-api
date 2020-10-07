@@ -57,6 +57,6 @@ class CloneModflowModelCommandHandler
         $clone->setIsScenario(!$cloneAsTool);
 
         $this->entityManager->persist($clone);
-        $this->entityManager->flush($clone);
+        $this->entityManager->flush();
     }
 }
