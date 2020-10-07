@@ -1,0 +1,125 @@
+stages:
+  - test
+  - deploy
+
+# Cache libraries in between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - vendor/
+
+test:
+  # Select image from https://hub.docker.com/_/php/
+  image: php:7.4
+  stage: test
+
+  before_script:
+    # Install git, the php image doesn't have installed
+    - apt-get update -yqq
+    - apt-get install git unzip zlib1g-dev libzip-dev libpng-dev -yqq
+
+    # Install mysql driver
+    - docker-php-ext-install pdo_mysql zip gd
+
+    # Install composer
+    - curl -sS https://getcomposer.org/installer | php
+
+    # Install all project dependencies
+    - php composer.phar install
+
+  # We test PHP7.4 (the default) with MySQL
+  script:
+    - ./vendor/bin/simple-phpunit
+
+deploy:dev:
+  image: php:7.4
+  stage: deploy
+
+  environment:
+    name: development
+    url: https://api.dev.inowas.com
+
+  script:
+    - echo $CI_COMMIT_SHORT_SHA
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api-dev &&
+      git checkout dev &&
+      git fetch --all &&
+      git pull gitlab dev &&
+      docker-compose exec -T php composer install --no-dev &&
+      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker-compose exec -T php ./bin/console cache:clear -e prod &&
+      docker-compose exec -T php ./bin/console cache:clear -e dev'
+
+deploy:prod:production:
+  stage: deploy
+  environment:
+    name: production
+    url: https://api.dss.inowas.com
+
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh -t root@api.dss.inowas.com 'cd /srv/docker/api-dss &&
+      git fetch --all &&
+      git pull gitlab master &&
+      docker-compose exec -T php composer install --no-dev &&
+      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker-compose exec -T php ./bin/console cache:clear -e prod &&
+      docker-compose exec -T php ./bin/console cache:clear -e dev'
+
+  only:
+    - master
+
+deploy:prod:smart-control:
+  stage: deploy
+  environment:
+    name: production
+    url: https://api.dss.smart-control.inowas.com
+
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh -t root@api.dss.smart-control.inowas.com 'cd /srv/docker/api-smart-control &&
+      git fetch --all &&
+      git pull gitlab master &&
+      docker-compose exec -T php composer install --no-dev &&
+      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker-compose exec -T php ./bin/console cache:clear -e prod &&
+      docker-compose exec -T php ./bin/console cache:clear -e dev'
+
+  only:
+    - master
+
+deploy:prod:training:
+  stage: deploy
+  environment:
+    name: production
+    url: https://api.training.inowas.com
+
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh -t root@api.training.inowas.com 'cd /srv/docker/api-training &&
+      git fetch --all &&
+      git pull gitlab master &&
+      docker-compose exec -T php composer install --no-dev &&
+      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker-compose exec -T php ./bin/console cache:clear -e prod &&
+      docker-compose exec -T php ./bin/console cache:clear -e dev'
+
+  only:
+    - master

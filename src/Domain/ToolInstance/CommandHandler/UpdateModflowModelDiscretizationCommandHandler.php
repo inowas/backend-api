@@ -42,6 +42,6 @@ class UpdateModflowModelDiscretizationCommandHandler
 
         $modflowModel->setDiscretization($command->discretization());
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

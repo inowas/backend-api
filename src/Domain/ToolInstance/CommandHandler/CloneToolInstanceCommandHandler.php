@@ -71,6 +71,6 @@ class CloneToolInstanceCommandHandler
         $clone->setName($name);
 
         $this->entityManager->persist($clone);
-        $this->entityManager->flush($clone);
+        $this->entityManager->flush();
     }
 }

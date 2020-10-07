@@ -141,8 +141,13 @@ final class MessageBoxController
             return new JsonResponse(['message' => $e->getMessage()], 322);
         }
 
+        $token = $this->tokenStorage->getToken();
+        if (null === $token) {
+            return new JsonResponse(['message' => 'Unauthorized'], 401);
+        }
+
         /** @var User $user */
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $token->getUser();
 
         # extract message
         $message = $this->getMessage($request);
@@ -231,6 +236,7 @@ final class MessageBoxController
      */
     private function validateSchema(string $schema, string $content): void
     {
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $schema = Schema::import($schema);
 
         /** @noinspection JsonEncodingApiUsageInspection */

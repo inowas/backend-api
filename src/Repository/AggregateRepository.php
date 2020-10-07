@@ -118,7 +118,7 @@ final class AggregateRepository
         }
 
         $this->entityManager->persist($event);
-        $this->entityManager->flush($event);
+        $this->entityManager->flush();
         return true;
     }
 

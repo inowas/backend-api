@@ -53,6 +53,6 @@ class UpdateToolInstanceDataCommandHandler
 
         $toolInstance->setData($command->data());
         $this->entityManager->persist($toolInstance);
-        $this->entityManager->flush($toolInstance);
+        $this->entityManager->flush();
     }
 }

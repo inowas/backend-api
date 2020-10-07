@@ -45,6 +45,6 @@ class UpdateStressperiodsCommandHandler
 
         $modflowModel->setDiscretization($discretization);
         $this->entityManager->persist($modflowModel);
-        $this->entityManager->flush($modflowModel);
+        $this->entityManager->flush();
     }
 }

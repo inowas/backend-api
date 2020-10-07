@@ -61,7 +61,7 @@ class CloneScenarioAnalysisCommandHandler
         $newSimpleTool->setName($name);
 
         $this->entityManager->persist($newSimpleTool);
-        $this->entityManager->flush($newSimpleTool);
+        $this->entityManager->flush();
     }
 
     /**
@@ -83,6 +83,6 @@ class CloneScenarioAnalysisCommandHandler
         $clonedModel->setIsScenario(true);
         $clonedModel->setUser($user);
         $this->entityManager->persist($clonedModel);
-        $this->entityManager->flush($clonedModel);
+        $this->entityManager->flush();
     }
 }

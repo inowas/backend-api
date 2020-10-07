@@ -54,6 +54,6 @@ class DeleteToolInstanceCommandHandler
 
         $toolInstance->setIsArchived(true);
         $this->entityManager->persist($toolInstance);
-        $this->entityManager->flush($toolInstance);
+        $this->entityManager->flush();
     }
 }
