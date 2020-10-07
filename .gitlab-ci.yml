@@ -47,11 +47,9 @@ deploy:dev:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api-dev &&
-      git reset --hard &&
       git checkout dev &&
       git fetch --all &&
-      git checkout $CI_COMMIT_SHA &&
-      rm -rf web/app.php && mv web/app_dev.php web/app.php &&
+      git pull origin dev &&
       docker-compose exec -T php composer install &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
