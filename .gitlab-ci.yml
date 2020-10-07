@@ -55,10 +55,13 @@ deploy:dev:
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
       docker-compose exec -T php ./bin/console cache:clear -e dev'
 
+  only:
+    - dev
+
 deploy:prod:production:
   stage: deploy
   environment:
-    name: production
+    name: dss
     url: https://api.dss.inowas.com
 
   script:
@@ -81,7 +84,7 @@ deploy:prod:production:
 deploy:prod:smart-control:
   stage: deploy
   environment:
-    name: production
+    name: smart-control
     url: https://api.dss.smart-control.inowas.com
 
   script:
@@ -104,7 +107,7 @@ deploy:prod:smart-control:
 deploy:prod:training:
   stage: deploy
   environment:
-    name: production
+    name: training
     url: https://api.training.inowas.com
 
   script:
