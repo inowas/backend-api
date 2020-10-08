@@ -59,9 +59,6 @@ deploy:dev:
   only:
     - dev
 
-  only:
-    - dev
-
 deploy:prod:production:
   stage: deploy
   environment:
