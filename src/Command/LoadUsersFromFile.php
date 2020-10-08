@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Domain\User\Command\ChangeUserProfileCommand;
 use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,13 +20,13 @@ class LoadUsersFromFile extends Command
     protected static $defaultName = 'app:load-users';
 
     /** @var MessageBusInterface $commandBus */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
     /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     /** @var KernelInterface $kernel */
-    private $kernel;
+    private KernelInterface $kernel;
 
     public function __construct(MessageBusInterface $commandBus, EntityManagerInterface $entityManager, KernelInterface $kernel)
     {
@@ -46,18 +47,18 @@ class LoadUsersFromFile extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
-     * @throws \Exception
+     * @return int
+     * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
         $filename = sprintf('%s/%s', $this->kernel->getProjectDir(), $file);
         try {
             $users = json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $output->writeln($e->getMessage());
-            return;
+            return 1;
         }
 
         $heads = $users['heads'];
@@ -81,7 +82,7 @@ class LoadUsersFromFile extends Command
 
                 try {
                     $this->commandBus->dispatch($command);
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $output->write(sprintf('Error creating user with username %s', $user->getUsername()));
                 }
             }
@@ -94,11 +95,13 @@ class LoadUsersFromFile extends Command
 
             try {
                 $this->commandBus->dispatch($command);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $output->write(sprintf('Error updating profile of user with username %s', $user->getUsername()));
             }
 
             $output->writeln(sprintf('User created/updated: %s with roles %s', $user->getUsername(), implode(', ', $user->getRoles())));
         }
+
+        return 0;
     }
 }

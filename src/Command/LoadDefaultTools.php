@@ -10,28 +10,22 @@ use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class LoadDefaultTools extends Command
 {
     protected static $defaultName = 'app:load-tools';
 
-    private MessageBusInterface $commandBus;
-
     private EntityManagerInterface $entityManager;
 
-    private KernelInterface $kernel;
 
-    public function __construct(MessageBusInterface $commandBus, EntityManagerInterface $entityManager, KernelInterface $kernel)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->commandBus = $commandBus;
         $this->entityManager = $entityManager;
-        $this->kernel = $kernel;
         parent::__construct();
     }
 
@@ -49,13 +43,13 @@ class LoadDefaultTools extends Command
      * @return int|void|null
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $username = $input->getArgument('username');
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
 
         if (!$user instanceof User) {
-            throw new Exception(sprintf('User with username %s not found.', $username));
+            throw new RuntimeException(sprintf('User with username %s not found.', $username));
         }
 
         $simpleTools = $this->entityManager->getRepository(SimpleTool::class)->findBy(['user' => $user]);
@@ -79,6 +73,8 @@ class LoadDefaultTools extends Command
             $this->entityManager->flush();
             $output->writeln(sprintf('Create Default Tool %s', $simpleTool->tool()));
         }
+
+        return 0;
     }
 
     /**
