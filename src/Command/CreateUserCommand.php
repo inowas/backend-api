@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Domain\User\Command\CreateUserCommand as CreateUserCommandAlias;
 use App\Service\UserManager;
 
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,8 +20,8 @@ final class CreateUserCommand extends Command
 
     protected static $defaultName = 'app:create-user';
 
-    private $commandBus;
-    private $userManager;
+    private MessageBusInterface $commandBus;
+    private UserManager $userManager;
 
     public function __construct(MessageBusInterface $commandBus, UserManager $userManager)
     {
@@ -40,23 +43,25 @@ final class CreateUserCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
-     * @throws \Exception
+     * @return int
+     * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
 
         if (!$this->userManager->usernameIsValidAndAvailable($username)) {
-            throw new \Exception('Username ist not available already exits');
+            throw new RuntimeException('Username ist not available already exits');
         }
 
-        /** @var \App\Domain\User\Command\CreateUserCommand $command */
-        $command = \App\Domain\User\Command\CreateUserCommand::fromParams($username, $password);
+        /** @var CreateUserCommandAlias $command */
+        $command = CreateUserCommandAlias::fromParams($username, $password);
         $command->withAddedMetadata('user_id', 'CLI');
         $this->commandBus->dispatch($command);
         $output->writeln('User successfully generated!');
+
+        return 0;
     }
 }
