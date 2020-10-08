@@ -53,7 +53,11 @@ deploy:dev:
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev'
+      docker-compose exec -T php ./bin/console cache:clear -e dev &&
+      sh syncSchema.sh'
+
+  only:
+    - dev
 
   only:
     - dev
@@ -76,7 +80,8 @@ deploy:prod:production:
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev'
+      docker-compose exec -T php ./bin/console cache:clear -e dev &&
+      sh syncSchema.sh'
 
   only:
     - master
@@ -99,7 +104,8 @@ deploy:prod:smart-control:
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev'
+      docker-compose exec -T php ./bin/console cache:clear -e dev &&
+      sh syncSchema.sh'
 
   only:
     - master
@@ -122,7 +128,8 @@ deploy:prod:training:
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev'
+      docker-compose exec -T php ./bin/console cache:clear -e dev &&
+      sh syncSchema.sh'
 
   only:
     - master
