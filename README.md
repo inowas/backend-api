@@ -1,4 +1,4 @@
-# INOWAS DSS Data Backend
+# INOWAS DSS Backend API
 
 A simple api to store relevant data
 
