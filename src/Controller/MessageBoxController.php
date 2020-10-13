@@ -195,7 +195,7 @@ final class MessageBoxController
             throw new RuntimeException('Expecting Header: Content-Type: application/json');
         }
 
-        $body = json_decode($request->getContent(), true);
+        $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException('Invalid JSON received.');

@@ -15,39 +15,39 @@ class ModflowModel extends ToolInstance
 {
 
     /**
-     * @ORM\Column(name="discretization", type="json_array", nullable=false)
+     * @ORM\Column(name="discretization", type="json", nullable=false)
      */
-    private $discretization = [];
+    private array $discretization = [];
 
     /**
-     * @ORM\Column(name="soilmodel", type="json_array", nullable=false)
+     * @ORM\Column(name="soilmodel", type="json", nullable=false)
      */
-    private $soilmodel = [];
+    private array $soilmodel = [];
 
     /**
-     * @ORM\Column(name="boundaries", type="json_array", nullable=false)
+     * @ORM\Column(name="boundaries", type="json", nullable=false)
      */
-    private $boundaries = [];
+    private array $boundaries = [];
 
     /**
-     * @ORM\Column(name="transport", type="json_array", nullable=true)
+     * @ORM\Column(name="transport", type="json", nullable=true)
      */
-    private $transport = [];
+    private ?array $transport = [];
 
     /**
-     * @ORM\Column(name="variable_density", type="json_array", nullable=true)
+     * @ORM\Column(name="variable_density", type="json", nullable=true)
      */
-    private $variableDensity = [];
+    private ?array $variableDensity = [];
 
     /**
-     * @ORM\Column(name="calculation", type="json_array", nullable=false)
+     * @ORM\Column(name="calculation", type="json", nullable=false)
      */
-    private $calculation = [];
+    private array $calculation = [];
 
     /**
-     * @ORM\Column(name="packages", type="json_array", nullable=false)
+     * @ORM\Column(name="packages", type="text", nullable=false)
      */
-    private $packages = [];
+    private string $packages = '[]';
 
     public static function create(): ModflowModel
     {
@@ -63,7 +63,7 @@ class ModflowModel extends ToolInstance
         $self->transport = $arr['transport'] ?? [];
         $self->variableDensity = $arr['variableDensity'] ?? [];
         $self->calculation = $arr['calculation'] ?? [];
-        $self->packages = $arr['packages'] ?? [];
+        $self->packages = $arr['packages'] ? json_encode($arr['packages']) : '[]';
         return $self;
     }
 
@@ -125,12 +125,12 @@ class ModflowModel extends ToolInstance
 
     public function packages(): Packages
     {
-        return Packages::fromArray($this->packages);
+        return Packages::fromString($this->packages);
     }
 
     public function setPackages(Packages $packages): void
     {
-        $this->packages = $packages->toArray();
+        $this->packages = $packages->toString();
     }
 
     public function soilmodel(): Soilmodel
