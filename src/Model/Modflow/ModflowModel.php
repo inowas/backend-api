@@ -45,7 +45,7 @@ class ModflowModel extends ToolInstance
     private array $calculation = [];
 
     /**
-     * @ORM\Column(name="packages", type="json", nullable=false)
+     * @ORM\Column(name="packages", type="text", nullable=false)
      */
     private string $packages = '[]';
 
