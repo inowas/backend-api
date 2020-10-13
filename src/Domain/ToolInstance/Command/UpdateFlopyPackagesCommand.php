@@ -11,17 +11,17 @@ use Exception;
 class UpdateFlopyPackagesCommand extends Command
 {
     /** @var string */
-    private $id;
+    private string $id;
 
     /** @var array */
-    private $packages;
+    private array $packages;
 
     /**
      * @return string|null
      */
     public static function getJsonSchema(): ?string
     {
-        return sprintf('%s%s', __DIR__, '/../../../../schema/commands/updateFlopyPackages.json');
+        return null;
     }
 
     /**
@@ -42,6 +42,10 @@ class UpdateFlopyPackagesCommand extends Command
         return $this->id;
     }
 
+    /**
+     * @return Packages
+     * @throws \JsonException
+     */
     public function packages(): Packages
     {
         return Packages::fromArray($this->packages);
