@@ -32,12 +32,12 @@ class ModflowModel extends ToolInstance
     /**
      * @ORM\Column(name="transport", type="json", nullable=true)
      */
-    private array $transport = [];
+    private ?array $transport = [];
 
     /**
      * @ORM\Column(name="variable_density", type="json", nullable=true)
      */
-    private array $variableDensity = [];
+    private ?array $variableDensity = [];
 
     /**
      * @ORM\Column(name="calculation", type="json", nullable=false)
@@ -45,7 +45,7 @@ class ModflowModel extends ToolInstance
     private array $calculation = [];
 
     /**
-     * @ORM\Column(name="packages", type="json", nullable=false)
+     * @ORM\Column(name="packages", type="text", nullable=false)
      */
     private string $packages = '[]';
 
@@ -63,7 +63,7 @@ class ModflowModel extends ToolInstance
         $self->transport = $arr['transport'] ?? [];
         $self->variableDensity = $arr['variableDensity'] ?? [];
         $self->calculation = $arr['calculation'] ?? [];
-        $self->packages = $arr['packages'] ?? [];
+        $self->packages = $arr['packages'] ? json_encode($arr['packages']) : '[]';
         return $self;
     }
 
