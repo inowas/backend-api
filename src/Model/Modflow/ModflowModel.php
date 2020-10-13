@@ -32,12 +32,12 @@ class ModflowModel extends ToolInstance
     /**
      * @ORM\Column(name="transport", type="json", nullable=true)
      */
-    private array $transport = [];
+    private ?array $transport = [];
 
     /**
      * @ORM\Column(name="variable_density", type="json", nullable=true)
      */
-    private array $variableDensity = [];
+    private ?array $variableDensity = [];
 
     /**
      * @ORM\Column(name="calculation", type="json", nullable=false)
