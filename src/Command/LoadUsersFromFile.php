@@ -54,6 +54,11 @@ class LoadUsersFromFile extends Command
     {
         $file = $input->getArgument('file');
         $filename = sprintf('%s/%s', $this->kernel->getProjectDir(), $file);
+        if (!is_file($filename)) {
+            $output->writeln(sprintf('File "%s" not found!', $filename));
+            return 1;
+        }
+
         try {
             $users = json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $e) {

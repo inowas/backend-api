@@ -22,9 +22,6 @@ services:
       - ./public:/srv/api/public:ro
     ports:
       - "8080:80"
-    networks:
-      - web
-      - default
 
   db:
     # In production, you may want to use a managed database service
@@ -38,7 +35,3 @@ services:
       - ./docker/db/data:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
-
-networks:
-  web:
-    external: true
