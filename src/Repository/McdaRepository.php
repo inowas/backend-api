@@ -34,7 +34,6 @@ class McdaRepository extends ServiceEntityRepository implements ToolRepositoryIn
                 ->setParameter('tool', $tool . '%')
                 ->setParameter('isPublic', $isPublic)
                 ->setParameter('isArchived', $isArchived)
-                ->setParameter('isScenario', false)
                 ->getQuery()
                 ->getResult();
         }
@@ -46,7 +45,6 @@ class McdaRepository extends ServiceEntityRepository implements ToolRepositoryIn
             ->setParameter('tool', $tool . '%')
             ->setParameter('user', $user)
             ->setParameter('isArchived', $isArchived)
-            ->setParameter('isScenario', false)
             ->getQuery()
             ->getResult();
     }
