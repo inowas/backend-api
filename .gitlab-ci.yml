@@ -47,9 +47,11 @@ deploy:dev:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api-dev &&
+      docker-compose down &&
       git checkout dev &&
       git fetch --all --tags &&
       git pull gitlab dev &&
+      docker-compose up -d &&
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
@@ -75,8 +77,10 @@ deploy:prod:production:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -t root@api.dss.inowas.com 'cd /srv/docker/api-dss &&
+      docker-compose down &&
       git fetch --all --tags &&
       git pull gitlab master &&
+      docker-compose up -d &&
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
@@ -102,8 +106,10 @@ deploy:prod:smart-control:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -t root@api.dss.smart-control.inowas.com 'cd /srv/docker/api-smart-control &&
+      docker-compose down &&
       git fetch --all --tags &&
       git pull gitlab master &&
+      docker-compose up -d &&
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
@@ -129,8 +135,10 @@ deploy:prod:training:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -t root@api.training.inowas.com 'cd /srv/docker/api-training &&
+      docker-compose down &&
       git fetch --all --tags &&
       git pull gitlab master &&
+      docker-compose up -d &&
       docker-compose exec -T php composer install --no-dev &&
       docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker-compose exec -T php ./bin/console cache:clear -e prod &&
