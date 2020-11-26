@@ -154,10 +154,9 @@ final class MessageBoxController
         $messageName = $message['message_name'];
         $payload = $message['payload'];
 
-        /** @var Command $commandClass */
-        $commandClass = $this->availableCommands[$messageName];
-
         try {
+            /** @var Command $commandClass */
+            $commandClass = $this->availableCommands[$messageName];
             $commandClass::getJsonSchema() && $this->validateSchema($commandClass::getJsonSchema(), $request->getContent());
         } catch (\Exception $e) {
             return new JsonResponse(['message' => $e->getMessage()], 422);
