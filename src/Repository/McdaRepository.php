@@ -6,10 +6,9 @@ namespace App\Repository;
 
 use App\Model\Mcda\Mcda;
 use App\Model\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class McdaRepository extends ServiceEntityRepository implements ToolRepositoryInterface
+class McdaRepository extends ToolsRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
