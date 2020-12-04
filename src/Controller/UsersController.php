@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Model\Mcda\Mcda;
 use App\Model\Modflow\ModflowModel;
 use App\Model\SimpleTool\SimpleTool;
+use App\Model\ToolInstance;
 use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -82,6 +83,7 @@ class UsersController
         );
 
         $tools = [];
+        /** @var ToolInstance $toolInstance */
         foreach ($toolInstances as $toolInstance) {
             $tools[] = [
                 'id' => $toolInstance->id(),
