@@ -138,7 +138,7 @@ final class MessageBoxController
         try {
             $this->assertIsValidRequest($request);
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], 322);
+            return new JsonResponse(['message' => $e->getMessage()], 422);
         }
 
         $token = $this->tokenStorage->getToken();
@@ -154,13 +154,12 @@ final class MessageBoxController
         $messageName = $message['message_name'];
         $payload = $message['payload'];
 
-        /** @var Command $commandClass */
-        $commandClass = $this->availableCommands[$messageName];
-
         try {
+            /** @var Command $commandClass */
+            $commandClass = $this->availableCommands[$messageName];
             $commandClass::getJsonSchema() && $this->validateSchema($commandClass::getJsonSchema(), $request->getContent());
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], 322);
+            return new JsonResponse(['message' => $e->getMessage()], 422);
         }
 
         /** @var Command $command */
@@ -171,7 +170,7 @@ final class MessageBoxController
         try {
             $this->commandBus->dispatch($command);
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], $e->getCode());
+            return new JsonResponse(['message' => $e->getMessage()], 500);
         }
 
         return new JsonResponse([], 202);
