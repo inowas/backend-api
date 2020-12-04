@@ -152,7 +152,7 @@ class User implements UserInterface
 
     public function getRoles(): array
     {
-        return $this->roles;
+        return array_values($this->roles);
     }
 
     public function setRoles(array $roles): void
