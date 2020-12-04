@@ -8,13 +8,13 @@ use App\Model\ToolInstance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\SimpleToolRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\SimpleToolsRepository")
  */
 class SimpleTool extends ToolInstance
 {
     /**
      * @var array
-     * @ORM\Column(name="data", type="json_array")
+     * @ORM\Column(name="data", type="json")
      */
     private array $data = [];
 
