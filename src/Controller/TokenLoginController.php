@@ -23,7 +23,7 @@ class TokenLoginController
     }
 
     /**
-     * @Route("/token_login", name="token_login", methods={"POST", "GET"})
+     * @Route("/token_login", name="token_login", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      * @throws \JsonException
