@@ -11,6 +11,7 @@ use App\Domain\User\Projection\UserProjector;
 use App\Model\ProjectorCollection;
 use App\Repository\AggregateRepository;
 use App\Service\UserManager;
+use Exception;
 use Ramsey\Uuid\Uuid;
 
 class CreateUserCommandHandler
@@ -34,7 +35,7 @@ class CreateUserCommandHandler
 
     /**
      * @param CreateUserCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(CreateUserCommand $command)
     {
@@ -44,8 +45,8 @@ class CreateUserCommandHandler
         $isEnabled = $command->isEnabled();
 
         if (!$this->userManager->usernameIsValidAndAvailable($username)) {
-            throw new \Exception('Username already in use');
-        };
+            throw new Exception('Username already in use');
+        }
 
         $encryptedPassword = $this->userManager->encryptPassword($password);
 

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use DateTimeImmutable;
+use Exception;
+
 abstract class Command
 {
-    protected $metadata = [];
+    protected array $metadata = [];
 
-    /** @var \DateTimeImmutable */
-    protected $dateTime;
+    protected DateTimeImmutable $dateTime;
 
     abstract public static function fromPayload(array $payload);
 
@@ -24,11 +26,11 @@ abstract class Command
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function __construct()
     {
-        $this->dateTime = new \DateTimeImmutable('now');
+        $this->dateTime = new DateTimeImmutable('now');
     }
 
     public function withAddedMetadata(string $key, $value): void
@@ -41,7 +43,12 @@ abstract class Command
         return $this->metadata;
     }
 
-    public function dateTime(): \DateTimeImmutable
+    public function getMetadataByKey(string $key)
+    {
+        return $this->metadata[$key] ?? null;
+    }
+
+    public function dateTime(): DateTimeImmutable
     {
         return $this->dateTime;
     }

@@ -9,7 +9,7 @@ use App\Domain\User\Aggregate\UserAggregate;
 
 final class UserProfileHasBeenChanged extends DomainEvent
 {
-    private $profile;
+    private array $profile;
 
     /**
      * @param string $aggregateId
@@ -17,7 +17,7 @@ final class UserProfileHasBeenChanged extends DomainEvent
      * @return UserProfileHasBeenChanged
      * @throws \Exception
      */
-    public static function fromParams(string $aggregateId, array $profile)
+    public static function fromParams(string $aggregateId, array $profile): UserProfileHasBeenChanged
     {
         $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), [
             'profile' => $profile,

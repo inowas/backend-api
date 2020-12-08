@@ -6,18 +6,19 @@ namespace App\Domain\User\Event;
 
 use App\Model\DomainEvent;
 use App\Domain\User\Aggregate\UserAggregate;
+use Exception;
 
 final class UsernameHasBeenChanged extends DomainEvent
 {
-    private $username;
+    private string $username;
 
     /**
      * @param string $aggregateId
      * @param string $username
      * @return UsernameHasBeenChanged
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function fromParams(string $aggregateId, string $username)
+    public static function fromParams(string $aggregateId, string $username): UsernameHasBeenChanged
     {
         $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), [
             'username' => $username,

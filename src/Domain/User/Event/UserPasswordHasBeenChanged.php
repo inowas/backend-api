@@ -9,7 +9,7 @@ use App\Domain\User\Aggregate\UserAggregate;
 
 final class UserPasswordHasBeenChanged extends DomainEvent
 {
-    private $password;
+    private string $password;
 
     /**
      * @param string $aggregateId
@@ -17,12 +17,11 @@ final class UserPasswordHasBeenChanged extends DomainEvent
      * @return UserPasswordHasBeenChanged
      * @throws \Exception
      */
-    public static function fromParams(string $aggregateId, string $password)
+    public static function fromParams(string $aggregateId, string $password): UserPasswordHasBeenChanged
     {
         $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), [
             'password' => $password,
         ]);
-
         $self->password = $password;
         return $self;
     }
