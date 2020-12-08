@@ -199,11 +199,90 @@ class UserCommandsTest extends CommandTestBaseClass
      * @test
      * @depends aUserCanBeReactivated
      * @param array $credentials
-     * @throws \Exception
+     * @return array
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \JsonException
+     */
+    public function aUserCanBePromotedByAnAdmin(array $credentials): array
+    {
+
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'promoteUser',
+            'payload' => [
+                'user_id' => $user->getId()->toString(),
+                'role' => 'ROLE_TEST_123'
+            ]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        self::assertContains('ROLE_TEST_123', $user->getRoles());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBeReactivated
+     * @param array $credentials
+     * @return array
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \JsonException
+     */
+    public function aUserCanBeDemotedByAnAdmin(array $credentials): array
+    {
+
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        self::assertContains('ROLE_TEST_123', $user->getRoles());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'demoteUser',
+            'payload' => [
+                'user_id' => $user->getId()->toString(),
+                'role' => 'ROLE_TEST_123'
+            ]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        self::assertNotContains('ROLE_TEST_123', $user->getRoles());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBePromotedByAnAdmin
+     * @param array $credentials
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \JsonException
      */
     public function aUserCanBeDeletedByAnAdmin(array $credentials): void
     {
-        
+
         $username = $credentials['username'];
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);

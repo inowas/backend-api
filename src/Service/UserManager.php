@@ -11,8 +11,8 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 final class UserManager
 {
 
-    private $entityManager;
-    private $passwordEncoder;
+    private EntityManagerInterface $entityManager;
+    private UserPasswordEncoderInterface $passwordEncoder;
 
 
     public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
@@ -51,5 +51,21 @@ final class UserManager
         /** @var User $user */
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $id]);
         return $user;
+    }
+
+    public function findAllUsers(): array
+    {
+        return $this->entityManager->getRepository(User::class)->findAll();
+    }
+
+    public function findUserByUsername(string $username): ?User
+    {
+        return $this->entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+    }
+
+    public function saveUser(User $user): void
+    {
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
     }
 }

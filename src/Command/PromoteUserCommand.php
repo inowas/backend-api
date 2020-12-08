@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Domain\User\Command\CreateUserCommand as CreateUserCommandAlias;
-use App\Service\UserManager;
+use App\Domain\User\Command\PromoteUserCommand as PromoteUserCommandAlias;
 
+use App\Service\UserManager;
 use Exception;
-use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class CreateUserCommand extends Command
+final class PromoteUserCommand extends Command
 {
 
-    protected static $defaultName = 'app:create-user';
+    protected static $defaultName = 'app:user:promote';
 
     private MessageBusInterface $commandBus;
     private UserManager $userManager;
@@ -33,11 +32,10 @@ final class CreateUserCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Creates a new user.')
+            ->setDescription('Promotes a user.')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
-            ->addArgument('password', InputArgument::REQUIRED, 'User password')
-            ->setHelp('This command allows you to create a user...')
-        ;
+            ->addArgument('role', InputArgument::REQUIRED, 'Role')
+            ->setHelp('This command allows you to promote a user...');
     }
 
     /**
@@ -48,19 +46,19 @@ final class CreateUserCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
         $username = $input->getArgument('username');
-        $password = $input->getArgument('password');
+        $role = $input->getArgument('role');
 
-        if (!$this->userManager->usernameIsValidAndAvailable($username)) {
-            throw new RuntimeException('Username ist not available already exits');
+        $user = $this->userManager->findUserByUsername($username);
+        if ($user === null) {
+            $output->writeln(sprintf('User with username: %s not found.', $username));
+            return 1;
         }
 
-        $command = CreateUserCommandAlias::fromParams($username, $password);
+        $command = PromoteUserCommandAlias::fromParams($user->getId()->toString(), $role);
         $command->withAddedMetadata('user_id', 'CLI');
         $this->commandBus->dispatch($command);
-        $output->writeln('User successfully generated!');
-
+        $output->writeln('User successfully promoted!');
         return 0;
     }
 }

@@ -17,7 +17,6 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class UsersController
 {
-
     /** @var TokenStorageInterface */
     private TokenStorageInterface $tokenStorage;
 
@@ -33,6 +32,7 @@ class UsersController
     /**
      * @Route("/users/{id}", name="users", methods={"GET"})
      * @param Request $request
+     * @param string|null $id
      * @return JsonResponse
      */
     public function __invoke(Request $request, string $id = null): JsonResponse
@@ -47,7 +47,7 @@ class UsersController
             return new JsonResponse(null, 401);
         }
 
-        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+        if (!in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new JsonResponse(null, 403);
         }
 
@@ -64,6 +64,7 @@ class UsersController
                     'roles' => $user->getRoles(),
                     'profile' => $user->getProfile(),
                     'enabled' => $user->isEnabled(),
+                    'login_token' => $user->getLoginToken(),
                 ];
             }
 

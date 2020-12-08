@@ -10,10 +10,10 @@ use App\Domain\User\Aggregate\UserAggregate;
 final class UserHasBeenCreated extends DomainEvent
 {
 
-    private $username;
-    private $password;
-    private $roles;
-    private $enabled;
+    private string $username;
+    private string $password;
+    private array $roles;
+    private bool $enabled;
 
     /**
      * @param string $aggregateId
@@ -24,7 +24,7 @@ final class UserHasBeenCreated extends DomainEvent
      * @return UserHasBeenCreated
      * @throws \Exception
      */
-    public static function fromParams(string $aggregateId, string $username, string $password, array $roles = [], bool $enabled = true)
+    public static function fromParams(string $aggregateId, string $username, string $password, array $roles = [], bool $enabled = true): UserHasBeenCreated
     {
         $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), [
             'username' => $username,

@@ -41,6 +41,8 @@ use App\Domain\User\Command\ChangeUsernameCommand;
 use App\Domain\User\Command\ChangeUserPasswordCommand;
 use App\Domain\User\Command\ChangeUserProfileCommand;
 use App\Domain\User\Command\DeleteUserCommand;
+use App\Domain\User\Command\DemoteUserCommand;
+use App\Domain\User\Command\PromoteUserCommand;
 use App\Domain\User\Command\ReactivateUserCommand;
 
 use Symfony\Component\Security\Core\Security;
@@ -98,6 +100,8 @@ final class MessageBoxController
             ChangeUserPasswordCommand::class,
             ChangeUserProfileCommand::class,
             DeleteUserCommand::class,
+            DemoteUserCommand::class,
+            PromoteUserCommand::class,
             ReactivateUserCommand::class,
 
             AddBoundaryCommand::class,

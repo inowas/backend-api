@@ -47,6 +47,13 @@ class User implements UserInterface
     /**
      * @var string
      *
+     * @ORM\Column(name="login_token", type="string", length=255, nullable=true)
+     */
+    private string $loginToken;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="enabled", type="boolean", nullable=false)
      */
     private $enabled;
@@ -61,16 +68,17 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="roles", type="json_array", nullable=false)
+     * @ORM\Column(name="roles", type="json", nullable=false)
      */
     private $roles;
 
     /**
      * @var array
      *
-     * @ORM\Column(name="profile", type="json_array", nullable=false)
+     * @ORM\Column(name="profile", type="json", nullable=false)
      */
     private array $profile;
+
 
     /**
      * @param string $aggregateId
@@ -99,6 +107,7 @@ class User implements UserInterface
         $this->id = Uuid::uuid4();
         $this->username = $username;
         $this->password = $password;
+        $this->loginToken = Uuid::uuid4()->toString();
         $this->enabled = $enabled;
         $this->archived = false;
         $this->roles = $roles;
@@ -128,6 +137,16 @@ class User implements UserInterface
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public function getLoginToken(): ?string
+    {
+        return $this->loginToken;
+    }
+
+    public function setLoginToken(string $loginToken): void
+    {
+        $this->loginToken = $loginToken;
     }
 
     public function isEnabled(): bool
@@ -175,9 +194,8 @@ class User implements UserInterface
         return '';
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
-        return null;
     }
 
     public function setName(string $name): void

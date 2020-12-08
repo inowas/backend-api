@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Projection;
 
+use App\Domain\User\Event\UserHasBeenDemoted;
+use App\Domain\User\Event\UserHasBeenPromoted;
 use App\Model\User;
 use App\Model\Projector;
 use App\Domain\User\Aggregate\UserAggregate;
@@ -86,6 +88,58 @@ final class UserProjector extends Projector
         }
 
         $this->entityManager->remove($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param UserHasBeenDemoted $event
+     * @throws Exception
+     */
+    protected function onUserHasBeenDemoted(UserHasBeenDemoted $event): void
+    {
+        /** @var User $user */
+        $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
+
+        if (!$user instanceof User) {
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
+        }
+
+        if (!in_array($event->role(), $user->getRoles(), true)) {
+            return;
+        }
+
+        $newRoles = [];
+        foreach ($user->getRoles() as $role) {
+            if ($role !== $event->role()) {
+                $newRoles[] = $role;
+            }
+        }
+        $user->setRoles($newRoles);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param UserHasBeenPromoted $event
+     * @throws Exception
+     */
+    protected function onUserHasBeenPromoted(UserHasBeenPromoted $event): void
+    {
+        /** @var User $user */
+        $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
+
+        if (!$user instanceof User) {
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
+        }
+
+        if (in_array($event->role(), $user->getRoles(), true)) {
+            return;
+        }
+
+        $roles = $user->getRoles();
+        $roles[] = $event->role();
+        $user->setRoles($roles);
+        $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
 
