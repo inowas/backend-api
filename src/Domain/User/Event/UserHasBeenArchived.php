@@ -14,9 +14,8 @@ final class UserHasBeenArchived extends DomainEvent
      * @return UserHasBeenArchived
      * @throws \Exception
      */
-    public static function fromParams(string $aggregateId)
+    public static function fromParams(string $aggregateId): UserHasBeenArchived
     {
-        $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), []);
-        return $self;
+        return new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), []);
     }
 }

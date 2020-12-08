@@ -68,7 +68,7 @@ final class AggregateRepository
 
         $events = $this->findEventsByAggregateId($aggregateName, $aggregateId);
         if ($events->isEmpty()) {
-            throw new RuntimeException('Unknown AggregateId');
+            throw new RuntimeException(sprintf('Unknown AggregateId: %s or AggregateName: %s', $aggregateId, $aggregateName));
         }
 
         if (!array_key_exists($aggregateName, $this->aggregateMap)) {

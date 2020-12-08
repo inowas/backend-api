@@ -6,17 +6,17 @@ namespace App\Domain\User\Event;
 
 use App\Model\DomainEvent;
 use App\Domain\User\Aggregate\UserAggregate;
+use Exception;
 
 final class UserHasBeenReactivated extends DomainEvent
 {
     /**
      * @param string $aggregateId
      * @return UserHasBeenReactivated
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function fromParams(string $aggregateId)
+    public static function fromParams(string $aggregateId): UserHasBeenReactivated
     {
-        $self = new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), []);
-        return $self;
+        return new self($aggregateId, UserAggregate::NAME, self::getEventNameFromClassname(), []);
     }
 }
