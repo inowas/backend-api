@@ -8,7 +8,7 @@ use App\Model\Command;
 
 class ReactivateUserCommand extends Command
 {
-    private ?self $userId;
+    private ?string $userId;
 
     public static function fromPayload(array $payload): self
     {
