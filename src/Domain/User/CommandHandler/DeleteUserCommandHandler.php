@@ -12,18 +12,15 @@ use App\Domain\User\Event\UserHasBeenDeleted;
 use App\Domain\User\Projection\UserProjector;
 use App\Repository\AggregateRepository;
 use App\Service\UserManager;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
+use RuntimeException;
 
 class DeleteUserCommandHandler
 {
-    /** @var AggregateRepository */
-    private $aggregateRepository;
-
-    /** @var ProjectorCollection */
-    private $projectors;
-
-    /** @var UserManager */
-    private $userManager;
-
+    private AggregateRepository $aggregateRepository;
+    private ProjectorCollection $projectors;
+    private UserManager $userManager;
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {
@@ -34,28 +31,27 @@ class DeleteUserCommandHandler
 
     /**
      * @param DeleteUserCommand $command
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function __invoke(DeleteUserCommand $command)
     {
-        $isAdmin = $command->metadata()['is_admin'];
-
+        $isAdmin = $command->getMetadataByKey('is_admin') === true || $command->getMetadataByKey('user_id') === 'CLI';
         if (!$isAdmin) {
-            throw new \Exception('Bad credentials. Please use your admin-account.');
+            throw new RuntimeException('Bad credentials. Please use your admin-account.');
         }
 
         $executorId = $command->metadata()['user_id'];
         $userToDeleteId = $command->userId();
 
         if ($executorId === $userToDeleteId) {
-            throw new \Exception('You cannot delete your own identity. Please ask another admin.');
+            throw new RuntimeException('You cannot delete your own identity. Please ask another admin.');
         }
 
 
         $user = $this->userManager->findUserById($userToDeleteId);
         if (!$user instanceof User) {
-            throw new \Exception('User not found, already deleted?');
+            throw new RuntimeException('User not found, already deleted?');
         }
 
         $aggregateId = $userToDeleteId;
@@ -64,6 +60,10 @@ class DeleteUserCommandHandler
         $aggregate->apply($event);
 
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

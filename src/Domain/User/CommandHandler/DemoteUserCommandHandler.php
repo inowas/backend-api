@@ -22,7 +22,6 @@ class DemoteUserCommandHandler
     private ProjectorCollection $projectors;
     private UserManager $userManager;
 
-
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {
         $this->aggregateRepository = $aggregateRepository;
@@ -42,6 +41,10 @@ class DemoteUserCommandHandler
             throw new RuntimeException('Bad credentials. Please use your admin-account.');
         }
 
+        if ($command->role() === 'ROLE_ADMIN' && $command->userId() === $command->getMetadataByKey('user_id')) {
+            throw new RuntimeException('You cannot demote yourself.');
+        }
+
         $user = $this->userManager->findUserById($command->userId());
         if (!$user instanceof User) {
             throw new RuntimeException(sprintf('User with id: %s not found.', $command->userId()));
@@ -57,6 +60,10 @@ class DemoteUserCommandHandler
         $aggregate->apply($event);
 
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

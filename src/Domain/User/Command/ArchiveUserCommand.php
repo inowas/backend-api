@@ -8,9 +8,9 @@ use App\Model\Command;
 
 final class ArchiveUserCommand extends Command
 {
-    private $userId;
+    private ?string $userId;
 
-    public static function fromPayload(array $payload)
+    public static function fromPayload(array $payload): self
     {
         $self = new self();
         $self->userId = $payload['user_id'] ?? null;

@@ -12,19 +12,15 @@ use App\Domain\User\Projection\UserProjector;
 use App\Model\ProjectorCollection;
 use App\Repository\AggregateRepository;
 use App\Service\UserManager;
+use Exception;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 
 class SignupUserCommandHandler
 {
-    /** @var AggregateRepository */
-    private $aggregateRepository;
-
-    /** @var ProjectorCollection */
-    private $projectors;
-
-    /** @var UserManager */
-    private $userManager;
-
+    private AggregateRepository $aggregateRepository;
+    private ProjectorCollection $projectors;
+    private UserManager $userManager;
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {
@@ -35,7 +31,7 @@ class SignupUserCommandHandler
 
     /**
      * @param SignupUserCommand $command
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(SignupUserCommand $command)
     {
@@ -45,29 +41,34 @@ class SignupUserCommandHandler
         $isEnabled = true;
 
         if (!$this->userManager->usernameIsValidAndAvailable($username)) {
-            throw new \Exception('Username already in use');
-        };
+            throw new RuntimeException('Username already in use');
+        }
 
         $encryptedPassword = $this->userManager->encryptPassword($password);
 
+        // Create User
         $aggregateId = Uuid::uuid4()->toString();
-        $createUserEvent = UserHasBeenCreated::fromParams(
-            $aggregateId, $username, $encryptedPassword, $roles, $isEnabled
-        );
-
+        $createUserEvent = UserHasBeenCreated::fromParams($aggregateId, $username, $encryptedPassword, $roles, $isEnabled);
         $aggregate = UserAggregate::withId($aggregateId);
         $aggregate->apply($createUserEvent);
-
         $this->aggregateRepository->storeEvent($createUserEvent);
-        $this->projectors->getProjector(UserProjector::class)->apply($createUserEvent);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($createUserEvent);
 
+        // Update UserProfile
         $updateProfileEvent = UserProfileHasBeenChanged::fromParams($aggregateId, [
             'name' => $command->name(),
             'email' => $command->email()
         ]);
-
         $aggregate->apply($updateProfileEvent);
         $this->aggregateRepository->storeEvent($updateProfileEvent);
-        $this->projectors->getProjector(UserProjector::class)->apply($updateProfileEvent);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($updateProfileEvent);
     }
 }
