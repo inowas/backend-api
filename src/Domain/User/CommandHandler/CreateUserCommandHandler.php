@@ -18,11 +18,8 @@ use RuntimeException;
 class CreateUserCommandHandler
 {
     private AggregateRepository $aggregateRepository;
-
     private ProjectorCollection $projectors;
-
     private UserManager $userManager;
-
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {

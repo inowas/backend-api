@@ -15,22 +15,15 @@ use App\Model\User;
 use App\Service\UserManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
+use RuntimeException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class ChangeUserPasswordCommandHandler
 {
-    /** @var AggregateRepository */
-    private $aggregateRepository;
-
-    /** @var UserPasswordEncoderInterface */
-    private $passwordEncoder;
-
-    /** @var ProjectorCollection */
-    private $projectors;
-
-    /** @var UserManager */
-    private $userManager;
-
+    private AggregateRepository $aggregateRepository;
+    private UserPasswordEncoderInterface $passwordEncoder;
+    private ProjectorCollection $projectors;
+    private UserManager $userManager;
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -58,7 +51,7 @@ class ChangeUserPasswordCommandHandler
         $user = $this->userManager->findUserById($userId);
 
         if (!$user instanceof User) {
-            throw new Exception('User not found');
+            throw new RuntimeException('User not found');
         }
 
         if (!$isAdmin && !$this->passwordEncoder->isPasswordValid($user, $command->password())) {
@@ -73,6 +66,10 @@ class ChangeUserPasswordCommandHandler
         $aggregate->apply($event);
 
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

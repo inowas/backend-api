@@ -22,7 +22,6 @@ class PromoteUserCommandHandler
     private ProjectorCollection $projectors;
     private UserManager $userManager;
 
-
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {
         $this->aggregateRepository = $aggregateRepository;
