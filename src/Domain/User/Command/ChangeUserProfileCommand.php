@@ -8,8 +8,8 @@ use App\Model\Command;
 
 class ChangeUserProfileCommand extends Command
 {
-    private $userId;
-    private $profile;
+    private ?string $userId;
+    private array $profile;
 
     public static function fromPayload(array $payload): self
     {

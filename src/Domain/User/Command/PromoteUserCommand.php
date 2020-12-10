@@ -11,12 +11,12 @@ final class PromoteUserCommand extends Command
     private string $userId;
     private string $role;
 
-    public static function fromParams(string $userId, string $role): PromoteUserCommand
+    public static function fromParams(string $userId, string $role): self
     {
         return self::fromPayload(["user_id" => $userId, "role" => $role]);
     }
 
-    public static function fromPayload(array $payload): PromoteUserCommand
+    public static function fromPayload(array $payload): self
     {
         $self = new self();
         $self->userId = $payload['user_id'];

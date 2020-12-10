@@ -57,6 +57,10 @@ class PromoteUserCommandHandler
         $aggregate->apply($event);
 
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

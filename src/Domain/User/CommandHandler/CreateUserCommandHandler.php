@@ -13,17 +13,15 @@ use App\Repository\AggregateRepository;
 use App\Service\UserManager;
 use Exception;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 
 class CreateUserCommandHandler
 {
-    /** @var AggregateRepository */
-    private $aggregateRepository;
+    private AggregateRepository $aggregateRepository;
 
-    /** @var ProjectorCollection */
-    private $projectors;
+    private ProjectorCollection $projectors;
 
-    /** @var UserManager */
-    private $userManager;
+    private UserManager $userManager;
 
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
@@ -39,13 +37,18 @@ class CreateUserCommandHandler
      */
     public function __invoke(CreateUserCommand $command)
     {
+        $isAdmin = $command->getMetadataByKey('is_admin') === true || $command->getMetadataByKey('user_id') === 'CLI';
+        if (!$isAdmin) {
+            throw new RuntimeException('Bad credentials. Please use your admin-account.');
+        }
+
         $username = $command->username();
         $password = $command->password();
         $roles = $command->roles();
         $isEnabled = $command->isEnabled();
 
         if (!$this->userManager->usernameIsValidAndAvailable($username)) {
-            throw new Exception('Username already in use');
+            throw new RuntimeException('Username already in use');
         }
 
         $encryptedPassword = $this->userManager->encryptPassword($password);
@@ -59,6 +62,10 @@ class CreateUserCommandHandler
         $aggregate->apply($event);
 
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

@@ -34,6 +34,7 @@ use App\Domain\ToolInstance\Command\UpdateToolInstanceDataCommand;
 use App\Domain\ToolInstance\Command\UpdateToolInstanceMetadataCommand;
 use App\Domain\ToolInstance\Command\UpdateTransportCommand;
 use App\Domain\ToolInstance\Command\UpdateVariableDensityCommand;
+use App\Domain\User\Command\CreateUserCommand;
 use App\Model\User;
 use App\Model\Command;
 use App\Domain\User\Command\ArchiveUserCommand;
@@ -99,6 +100,7 @@ final class MessageBoxController
             ChangeUsernameCommand::class,
             ChangeUserPasswordCommand::class,
             ChangeUserProfileCommand::class,
+            CreateUserCommand::class,
             DeleteUserCommand::class,
             DemoteUserCommand::class,
             PromoteUserCommand::class,
