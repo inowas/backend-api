@@ -6,6 +6,7 @@ namespace App\Domain\User\Event;
 
 use App\Model\DomainEvent;
 use App\Domain\User\Aggregate\UserAggregate;
+use Exception;
 
 final class UserHasBeenCreated extends DomainEvent
 {
@@ -22,7 +23,7 @@ final class UserHasBeenCreated extends DomainEvent
      * @param array $roles
      * @param bool $enabled
      * @return UserHasBeenCreated
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromParams(string $aggregateId, string $username, string $password, array $roles = [], bool $enabled = true): UserHasBeenCreated
     {

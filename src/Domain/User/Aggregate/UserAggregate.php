@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\User\Aggregate;
 
 use App\Domain\User\Event\UserHasBeenDemoted;
+use App\Domain\User\Event\UserHasBeenDisabled;
+use App\Domain\User\Event\UserHasBeenEnabled;
 use App\Domain\User\Event\UserHasBeenPromoted;
 use App\Domain\User\Event\UserHasBeenArchived;
 use App\Domain\User\Event\UserHasBeenCreated;
@@ -24,6 +26,8 @@ class UserAggregate extends Aggregate
         UserHasBeenCreated::class,
         UserHasBeenDeleted::class,
         UserHasBeenDemoted::class,
+        UserHasBeenDisabled::class,
+        UserHasBeenEnabled::class,
         UserHasBeenPromoted::class,
         UserHasBeenReactivated::class,
         UsernameHasBeenChanged::class,
