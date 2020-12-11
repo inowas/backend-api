@@ -282,7 +282,77 @@ class UserCommandsTest extends CommandTestBaseClass
 
     /**
      * @test
-     * @depends aUserCanBePromotedByAnAdmin
+     * @depends aUserCanBeDemotedByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws JsonException
+     */
+    public function aUserCanBeDisabledByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertTrue($user->isEnabled());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'disableUser',
+            'payload' => ['user_id' => $user->getId()->toString()]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertFalse($user->isEnabled());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBeDisabledByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws JsonException
+     */
+    public function aUserCanBeEnabledByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertFalse($user->isEnabled());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'enableUser',
+            'payload' => ['user_id' => $user->getId()->toString()]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertTrue($user->isEnabled());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBeEnabledByAnAdmin
      * @param array $credentials
      * @return void
      * @throws ORMException

@@ -6,6 +6,7 @@ namespace App\Domain\User\Event;
 
 use App\Model\DomainEvent;
 use App\Domain\User\Aggregate\UserAggregate;
+use Exception;
 
 final class UserProfileHasBeenChanged extends DomainEvent
 {
@@ -15,7 +16,7 @@ final class UserProfileHasBeenChanged extends DomainEvent
      * @param string $aggregateId
      * @param array $profile
      * @return UserProfileHasBeenChanged
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromParams(string $aggregateId, array $profile): UserProfileHasBeenChanged
     {

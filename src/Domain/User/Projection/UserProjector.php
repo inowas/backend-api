@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\User\Projection;
 
 use App\Domain\User\Event\UserHasBeenDemoted;
+use App\Domain\User\Event\UserHasBeenDisabled;
+use App\Domain\User\Event\UserHasBeenEnabled;
 use App\Domain\User\Event\UserHasBeenPromoted;
 use App\Model\User;
 use App\Model\Projector;
@@ -115,6 +117,42 @@ final class UserProjector extends Projector
             }
         }
         $user->setRoles($newRoles);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param UserHasBeenDisabled $event
+     * @throws Exception
+     */
+    protected function onUserHasBeenDisabled(UserHasBeenDisabled $event): void
+    {
+        /** @var User $user */
+        $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
+
+        if (!$user instanceof User) {
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
+        }
+
+        $user->setEnabled(false);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param UserHasBeenEnabled $event
+     * @throws Exception
+     */
+    protected function onUserHasBeenEnabled(UserHasBeenEnabled $event): void
+    {
+        /** @var User $user */
+        $user = $this->userRepository->findOneBy(['id' => $event->aggregateId()]);
+
+        if (!$user instanceof User) {
+            throw new RuntimeException(sprintf('User with id: %s not found.', $event->aggregateId()));
+        }
+
+        $user->setEnabled(true);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
