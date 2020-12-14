@@ -5,7 +5,6 @@ namespace App\Tests\Controller;
 use App\Model\User;
 use Doctrine\ORM\ORMException;
 use Exception;
-use JsonException;
 
 class UserCommandsTest extends CommandTestBaseClass
 {
@@ -209,7 +208,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @param array $credentials
      * @return array
      * @throws ORMException
-     * @throws JsonException
+     * @throws Exception
      */
     public function aUserCanBePromotedByAnAdmin(array $credentials): array
     {
@@ -247,7 +246,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @param array $credentials
      * @return array
      * @throws ORMException
-     * @throws JsonException
+     * @throws Exception
      */
     public function aUserCanBeDemotedByAnAdmin(array $credentials): array
     {
@@ -286,7 +285,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @param array $credentials
      * @return array
      * @throws ORMException
-     * @throws JsonException
+     * @throws Exception
      */
     public function aUserCanBeDisabledByAnAdmin(array $credentials): array
     {
@@ -321,7 +320,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @param array $credentials
      * @return array
      * @throws ORMException
-     * @throws JsonException
+     * @throws Exception
      */
     public function aUserCanBeEnabledByAnAdmin(array $credentials): array
     {
@@ -354,13 +353,50 @@ class UserCommandsTest extends CommandTestBaseClass
      * @test
      * @depends aUserCanBeEnabledByAnAdmin
      * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aUserPasswordCanBeChangedByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertFalse($user->isEnabled());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $newPassword = sprintf('newPassword_%d', random_int(1000000, 10000000 - 1));
+
+        $command = [
+            'message_name' => 'changeUserPassword',
+            'new_password' => $newPassword
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        self::assertTrue($user->isEnabled());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserPasswordCanBeChangedByAnAdmin
+     * @param array $credentials
      * @return void
      * @throws ORMException
-     * @throws JsonException
+     * @throws Exception
      */
     public function aUserCanBeDeletedByAnAdmin(array $credentials): void
     {
-
         $username = $credentials['username'];
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
