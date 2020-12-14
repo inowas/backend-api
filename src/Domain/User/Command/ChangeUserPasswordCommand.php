@@ -10,7 +10,7 @@ class ChangeUserPasswordCommand extends Command
 {
     private ?string $userId;
 
-    private string $password;
+    private ?string $password;
 
     private string $newPassword;
 
@@ -18,7 +18,7 @@ class ChangeUserPasswordCommand extends Command
     {
         $self = new self();
         $self->userId = $payload['user_id'] ?? null;
-        $self->password = $payload['password'];
+        $self->password = $payload['password'] ?? null;
         $self->newPassword = $payload['new_password'];
         return $self;
     }
