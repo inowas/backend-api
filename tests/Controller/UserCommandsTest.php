@@ -362,7 +362,7 @@ class UserCommandsTest extends CommandTestBaseClass
         $username = $credentials['username'];
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
-        self::assertFalse($user->isEnabled());
+        $user_id = $user->getId()->toString();
 
         $adminUsername = 'admin' . random_int(1000000, 9999999);
         $adminPassword = 'password' . random_int(1000000, 9999999);
@@ -372,7 +372,10 @@ class UserCommandsTest extends CommandTestBaseClass
 
         $command = [
             'message_name' => 'changeUserPassword',
-            'new_password' => $newPassword
+            'payload' => [
+                'user_id' => $user_id,
+                'new_password' => $newPassword
+            ]
         ];
 
         $token = $this->getToken($adminUsername, $adminPassword);
@@ -381,10 +384,9 @@ class UserCommandsTest extends CommandTestBaseClass
 
         /** @var User $user */
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertEquals($newPassword, $user->getPassword());
 
-        self::assertTrue($user->isEnabled());
-
-        return $credentials;
+        return ['username' => $username, 'password' => $newPassword];
     }
 
     /**
