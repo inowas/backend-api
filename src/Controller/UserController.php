@@ -48,6 +48,7 @@ class UserController
             'profile' => $user->getProfile(),
             'enabled' => $user->isEnabled(),
             'archived' => $user->isArchived(),
+            'login_token' => $user->getLoginToken()
         ];
 
         return new JsonResponse($response);
