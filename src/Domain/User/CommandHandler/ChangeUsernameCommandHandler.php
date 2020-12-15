@@ -47,12 +47,17 @@ class ChangeUsernameCommandHandler
         $user = $this->userManager->findUserById($userId);
 
         if (!$user instanceof User) {
-            throw new RuntimeException('User not found');
+            throw new RuntimeException('User not found', 404);
         }
 
         if ($user->getUsername() === $command->username()) {
             // Nothing to change
             return;
+        }
+
+        $user = $this->userManager->findUserByUsername($command->username());
+        if ($user instanceof User) {
+            throw new RuntimeException('Username already in use.', 400);
         }
 
         $aggregateId = $userId;
