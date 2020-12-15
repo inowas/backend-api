@@ -26,6 +26,7 @@ test:
 
     # Install all project dependencies
     - php composer.phar install
+    - sh ./syncSchema.sh
 
   # We test PHP7.4 (the default) with MySQL
   script:
