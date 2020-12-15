@@ -26,8 +26,9 @@ class DeleteScenarioAnalysisCommandHandler
      */
     public function __invoke(DeleteScenarioAnalysisCommand $command)
     {
-        $userId = $command->metadata()['user_id'];
         $id = $command->id();
+        $isAdmin = $command->metadata()['is_admin'];
+        $userId = $command->metadata()['user_id'];
 
         $simpleTool = $this->entityManager->getRepository(SimpleTool::class)->findOneBy(['id' => $id]);
 
@@ -35,7 +36,7 @@ class DeleteScenarioAnalysisCommandHandler
             throw new RuntimeException('ToolInstance not found');
         }
 
-        if ($simpleTool->userId() !== $userId) {
+        if (!$isAdmin && $simpleTool->userId() !== $userId) {
             throw new RuntimeException('The scenarioAnalysis cannot be deleted due to permission problems.');
         }
 

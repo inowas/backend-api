@@ -30,8 +30,9 @@ class DeleteToolInstanceCommandHandler
      */
     public function __invoke(DeleteToolInstanceCommand $command)
     {
-        $userId = $command->metadata()['user_id'];
         $id = $command->id();
+        $isAdmin = $command->metadata()['is_admin'];
+        $userId = $command->metadata()['user_id'];
 
 
         $toolInstance = $this->entityManager->getRepository(SimpleTool::class)->findOneBy(['id' => $id]);
@@ -48,7 +49,7 @@ class DeleteToolInstanceCommandHandler
             throw new RuntimeException('ToolInstance not found');
         }
 
-        if ($toolInstance->userId() !== $userId) {
+        if (!$isAdmin && $toolInstance->userId() !== $userId) {
             throw new RuntimeException('The tool cannot be deleted due to permission problems.');
         }
 

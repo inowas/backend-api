@@ -26,8 +26,9 @@ class DeleteModflowModelCommandHandler
      */
     public function __invoke(DeleteModflowModelCommand $command)
     {
-        $userId = $command->metadata()['user_id'];
         $id = $command->id();
+        $isAdmin = $command->metadata()['is_admin'];
+        $userId = $command->metadata()['user_id'];
 
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $id]);
 
@@ -35,7 +36,7 @@ class DeleteModflowModelCommandHandler
             throw new RuntimeException('ToolInstance not found');
         }
 
-        if ($modflowModel->userId() !== $userId) {
+        if (!$isAdmin && $modflowModel->userId() !== $userId) {
             throw new RuntimeException('The modflowModel cannot be deleted due to permission problems.');
         }
 

@@ -27,12 +27,13 @@ final class AddBoundaryCommandHandler
      */
     public function __invoke(AddBoundaryCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $modelId = $command->id();
         $userId = $command->metadata()['user_id'];
 
         $modflowModel = $this->entityManager->getRepository(ModflowModel::class)->findOneBy(['id' => $modelId]);
 
-        if (!$modflowModel instanceof ModflowModel) {
+        if (!$isAdmin && !$modflowModel instanceof ModflowModel) {
             throw new RuntimeException('ModflowModel not found');
         }
 
