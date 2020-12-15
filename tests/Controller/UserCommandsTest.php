@@ -80,6 +80,33 @@ class UserCommandsTest extends CommandTestBaseClass
      * @return array
      * @throws Exception
      */
+    public function aUserCannotChangeUsernameAlreadyInUse(array $credentials): array
+    {
+        $username = $credentials['username'];
+        $password = $credentials['password'];
+
+
+        $usernameAlreadyInUse = $this->createRandomUser()->getUsername();
+        $command = [
+            'message_name' => 'changeUsername',
+            'payload' => [
+                'username' => $usernameAlreadyInUse
+            ]
+        ];
+
+        $token = $this->getToken($username, $password);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(400, $response->getStatusCode());
+        return ['username' => $username, 'password' => $password];
+    }
+
+    /**
+     * @test
+     * @depends aUserCannotChangeUsernameAlreadyInUse
+     * @param array $credentials
+     * @return array
+     * @throws Exception
+     */
     public function aUserCanChangePassword(array $credentials): array
     {
         $username = $credentials['username'];

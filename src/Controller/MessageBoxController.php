@@ -180,7 +180,7 @@ final class MessageBoxController
         try {
             $this->commandBus->dispatch($command);
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], 500);
+            return new JsonResponse(['message' => $e->getMessage()], $e->getCode() !== 0 ? $e->getCode() : 500);
         }
 
         return new JsonResponse([], 202);
