@@ -56,6 +56,10 @@ class UsersController
             $response = [];
 
             foreach ($users as $user) {
+                if ($user->isArchived()) {
+                    continue;
+                }
+
                 $response[] = [
                     'id' => $user->getId(),
                     'username' => $user->getUsername(),
