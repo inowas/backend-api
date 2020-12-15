@@ -108,6 +108,7 @@ class UsersController
             'roles' => $user->getRoles(),
             'profile' => $user->getProfile(),
             'enabled' => $user->isEnabled(),
+            'archived' => $user->isArchived(),
             'tools' => $tools
         ];
 
