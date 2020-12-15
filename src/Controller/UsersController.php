@@ -56,10 +56,6 @@ class UsersController
             $response = [];
 
             foreach ($users as $user) {
-                if ($user->isArchived()) {
-                    continue;
-                }
-
                 $response[] = [
                     'id' => $user->getId(),
                     'username' => $user->getUsername(),
@@ -68,6 +64,7 @@ class UsersController
                     'roles' => $user->getRoles(),
                     'profile' => $user->getProfile(),
                     'enabled' => $user->isEnabled(),
+                    'archived' => $user->isArchived(),
                     'login_token' => $user->getLoginToken(),
                 ];
             }
