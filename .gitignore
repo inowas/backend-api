@@ -26,3 +26,6 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
+###> schema ###
+/schema/
+###< schema ###

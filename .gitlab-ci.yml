@@ -16,7 +16,7 @@ test:
   before_script:
     # Install git, the php image doesn't have installed
     - apt-get update -yqq
-    - apt-get install git unzip zlib1g-dev libzip-dev libpng-dev -yqq
+    - apt-get install git unzip zlib1g-dev libzip-dev libpng-dev wget -yqq
 
     # Install mysql driver
     - docker-php-ext-install pdo_mysql zip gd
