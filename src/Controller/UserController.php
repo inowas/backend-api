@@ -47,6 +47,7 @@ class UserController
             'roles' => $user->getRoles(),
             'profile' => $user->getProfile(),
             'enabled' => $user->isEnabled(),
+            'archived' => $user->isArchived(),
         ];
 
         return new JsonResponse($response);
