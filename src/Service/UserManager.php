@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class UserManager
@@ -67,5 +68,16 @@ final class UserManager
     {
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+    }
+
+    public function createRandomLoginToken(string $userId): void
+    {
+        $user = $this->findUserById($userId);
+        if (!$user instanceof User) {
+            throw new RuntimeException(sprintf('User with id: %s not found.', $userId));
+        }
+
+        $user->createRandomLoginToken();
+        $this->saveUser($user);
     }
 }

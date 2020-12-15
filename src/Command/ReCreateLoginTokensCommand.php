@@ -53,7 +53,7 @@ final class ReCreateLoginTokensCommand extends Command
                 return 1;
             }
 
-            $user->setLoginToken(Uuid::uuid4()->toString());
+            $user->createRandomLoginToken();
             $this->userManager->saveUser($user);
             $output->writeln(sprintf("Token recreates for User: '%s'.", $username));
             return 0;

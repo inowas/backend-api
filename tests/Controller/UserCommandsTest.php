@@ -420,6 +420,43 @@ class UserCommandsTest extends CommandTestBaseClass
      * @test
      * @depends aUserPasswordCanBeChangedByAnAdmin
      * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aLoginTokenCanBeChangedByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        $user_id = $user->getId()->toString();
+        $oldLoginToken = $user->getLoginToken();
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'revokeLoginToken',
+            'payload' => [
+                'user_id' => $user_id
+            ]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertNotEquals($oldLoginToken, $user->getLoginToken());
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserPasswordCanBeChangedByAnAdmin
+     * @param array $credentials
      * @return void
      * @throws ORMException
      * @throws Exception

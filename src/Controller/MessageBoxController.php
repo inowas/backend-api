@@ -37,6 +37,7 @@ use App\Domain\ToolInstance\Command\UpdateVariableDensityCommand;
 use App\Domain\User\Command\CreateUserCommand;
 use App\Domain\User\Command\DisableUserCommand;
 use App\Domain\User\Command\EnableUserCommand;
+use App\Domain\User\Command\RevokeLoginTokenCommand;
 use App\Model\User;
 use App\Model\Command;
 use App\Domain\User\Command\ArchiveUserCommand;
@@ -109,6 +110,7 @@ final class MessageBoxController
             EnableUserCommand::class,
             PromoteUserCommand::class,
             ReactivateUserCommand::class,
+            RevokeLoginTokenCommand::class,
 
             AddBoundaryCommand::class,
             AddLayerCommand::class,
