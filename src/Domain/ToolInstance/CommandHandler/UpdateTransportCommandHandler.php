@@ -27,6 +27,7 @@ class UpdateTransportCommandHandler
      */
     public function __invoke(UpdateTransportCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $modelId = $command->id();
         $userId = $command->metadata()['user_id'];
 
@@ -36,7 +37,7 @@ class UpdateTransportCommandHandler
             throw new RuntimeException('ModflowModel not found');
         }
 
-        if ($modflowModel->userId() !== $userId) {
+        if (!$isAdmin && $modflowModel->userId() !== $userId) {
             throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 

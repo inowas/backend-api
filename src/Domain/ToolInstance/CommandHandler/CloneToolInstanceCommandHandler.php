@@ -31,6 +31,7 @@ class CloneToolInstanceCommandHandler
      */
     public function __invoke(CloneToolInstanceCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $userId = $command->metadata()['user_id'];
         $originId = $command->baseId();
         $cloneId = $command->id();
@@ -57,7 +58,7 @@ class CloneToolInstanceCommandHandler
 
         # The user needs to be the owner of the model or the model has to be public
         $canBeCloned = ($userId === $original->userId() || true === $original->isPublic());
-        if (!$canBeCloned) {
+        if (!$isAdmin && !$canBeCloned) {
             throw new RuntimeException('The tool cannot be cloned due to permission problems.');
         }
 

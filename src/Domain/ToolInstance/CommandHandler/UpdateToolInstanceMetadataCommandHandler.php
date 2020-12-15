@@ -30,6 +30,7 @@ class UpdateToolInstanceMetadataCommandHandler
      */
     public function __invoke(UpdateToolInstanceMetadataCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $userId = $command->metadata()['user_id'];
         $id = $command->id();
 
@@ -47,7 +48,7 @@ class UpdateToolInstanceMetadataCommandHandler
             throw new RuntimeException('Tool not found');
         }
 
-        if ($toolInstance->userId() !== $userId) {
+        if (!$isAdmin && $toolInstance->userId() !== $userId) {
             throw new RuntimeException('The tool cannot be updated due to permission problems.');
         }
 

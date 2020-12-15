@@ -27,6 +27,7 @@ class UpdateModflowModelMetadataCommandHandler
      */
     public function __invoke(UpdateModflowModelMetadataCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $modelId = $command->id();
         $userId = $command->metadata()['user_id'];
 
@@ -36,7 +37,7 @@ class UpdateModflowModelMetadataCommandHandler
             throw new RuntimeException('ModflowModel not found');
         }
 
-        if ($modflowModel->userId() !== $userId) {
+        if (!$isAdmin && $modflowModel->userId() !== $userId) {
             throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
