@@ -176,8 +176,17 @@ final class MessageBoxController
 
         /** @var Command $command */
         $command = $commandClass::fromPayload($payload);
-        $command->withAddedMetadata('user_id', $user->getId()->toString());
-        $command->withAddedMetadata('is_admin', in_array('ROLE_ADMIN', $user->getRoles(), true));
+
+        $metadata = $message['metadata'] ?? [];
+        $userId = $user->getId()->toString();
+
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
+        if ($isAdmin && array_key_exists('user_id', $metadata)) {
+            $userId = $metadata['user_id'];
+        }
+
+        $command->withAddedMetadata('user_id', $userId);
+        $command->withAddedMetadata('is_admin', $isAdmin);
 
         try {
             $this->commandBus->dispatch($command);
@@ -236,7 +245,7 @@ final class MessageBoxController
 
     private function getMessage(Request $request): array
     {
-        return json_decode($request->getContent(), true);
+        return json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

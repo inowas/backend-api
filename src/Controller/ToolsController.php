@@ -14,15 +14,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-
 class ToolsController
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
+    private EntityManagerInterface $entityManager;
+    private TokenStorageInterface $tokenStorage;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -35,6 +30,7 @@ class ToolsController
 
     /**
      * @Route("/tools", name="tools_list", methods={"GET"})
+     * @param Request $request
      * @return JsonResponse
      */
     public function __invoke(Request $request): JsonResponse
@@ -49,7 +45,7 @@ class ToolsController
             return new JsonResponse(null, 401);
         }
 
-        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+        if (!in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new JsonResponse(null, 403);
         }
 
