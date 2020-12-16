@@ -28,6 +28,7 @@ class DeleteScenarioCommandHandler
      */
     public function __invoke(DeleteScenarioCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $id = $command->id();
         $userId = $command->metadata()['user_id'];
 
@@ -37,7 +38,7 @@ class DeleteScenarioCommandHandler
             throw new RuntimeException('ToolInstance not found');
         }
 
-        if ($simpleTool->userId() !== $userId) {
+        if (!$isAdmin && $simpleTool->userId() !== $userId) {
             throw new RuntimeException('The scenarioAnalysis cannot be changed due to permission problems.');
         }
 

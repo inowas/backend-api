@@ -8,9 +8,9 @@ use App\Model\Command;
 
 class SignupUserCommand extends Command
 {
-    private $name;
-    private $email;
-    private $password;
+    private string $name;
+    private string $email;
+    private string $password;
 
     public static function fromParams(string $name, string $email, string $password): self
     {
@@ -24,31 +24,22 @@ class SignupUserCommand extends Command
     public static function fromPayload(array $payload): self
     {
         $self = new self();
-        $self->name = $payload['name'] ?? null;
-        $self->email = $payload['email'] ?? null;
-        $self->password = $payload['password'] ?? null;
+        $self->name = $payload['name'];
+        $self->email = $payload['email'];
+        $self->password = $payload['password'];
         return $self;
     }
 
-    /**
-     * @return string
-     */
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function email(): string
     {
         return $this->email;
     }
 
-    /**
-     * @return string
-     */
     public function password(): string
     {
         return $this->password;

@@ -28,6 +28,7 @@ class CloneModflowModelCommandHandler
      */
     public function __invoke(CloneModflowModelCommand $command)
     {
+        $isAdmin = $command->metadata()['is_admin'];
         $userId = $command->metadata()['user_id'];
         $originId = $command->id();
         $cloneId = $command->newId();
@@ -46,7 +47,7 @@ class CloneModflowModelCommandHandler
 
         # The user needs to be the owner of the model or the model has to be public
         $canBeCloned = ($userId === $original->userId() || true === $original->isPublic());
-        if (!$canBeCloned) {
+        if (!$isAdmin && !$canBeCloned) {
             throw new RuntimeException('The ModflowModel cannot be cloned due to permission problems.');
         }
 

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\UserManager;
+use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,7 @@ class TokenLoginController
      * @Route("/token_login", name="token_login", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
-     * @throws \JsonException
+     * @throws Exception
      */
     public function __invoke(Request $request): JsonResponse
     {

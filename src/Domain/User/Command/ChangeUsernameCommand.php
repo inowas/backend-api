@@ -8,10 +8,10 @@ use App\Model\Command;
 
 class ChangeUsernameCommand extends Command
 {
-    private $userId;
-    private $username;
+    private ?string $userId;
+    private string $username;
 
-    public static function fromPayload(array $payload)
+    public static function fromPayload(array $payload): self
     {
         $self = new self();
         $self->userId = $payload['user_id'] ?? null;

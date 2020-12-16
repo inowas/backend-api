@@ -30,8 +30,9 @@ class UpdateToolInstanceCommandHandler
      */
     public function __invoke(UpdateToolInstanceCommand $command)
     {
-        $userId = $command->metadata()['user_id'];
         $id = $command->id();
+        $isAdmin = $command->metadata()['is_admin'];
+        $userId = $command->metadata()['user_id'];
 
         $toolInstance = null;
         $tools = [Mcda::class, ModflowModel::class, SimpleTool::class];
@@ -47,7 +48,7 @@ class UpdateToolInstanceCommandHandler
             throw new RuntimeException('Tool not found');
         }
 
-        if ($toolInstance->userId() !== $userId) {
+        if (!$isAdmin && $toolInstance->userId() !== $userId) {
             throw new RuntimeException('The tool cannot be updated due to permission problems.');
         }
 

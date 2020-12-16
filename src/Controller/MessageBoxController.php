@@ -34,6 +34,10 @@ use App\Domain\ToolInstance\Command\UpdateToolInstanceDataCommand;
 use App\Domain\ToolInstance\Command\UpdateToolInstanceMetadataCommand;
 use App\Domain\ToolInstance\Command\UpdateTransportCommand;
 use App\Domain\ToolInstance\Command\UpdateVariableDensityCommand;
+use App\Domain\User\Command\CreateUserCommand;
+use App\Domain\User\Command\DisableUserCommand;
+use App\Domain\User\Command\EnableUserCommand;
+use App\Domain\User\Command\RevokeLoginTokenCommand;
 use App\Model\User;
 use App\Model\Command;
 use App\Domain\User\Command\ArchiveUserCommand;
@@ -99,10 +103,14 @@ final class MessageBoxController
             ChangeUsernameCommand::class,
             ChangeUserPasswordCommand::class,
             ChangeUserProfileCommand::class,
+            CreateUserCommand::class,
             DeleteUserCommand::class,
             DemoteUserCommand::class,
+            DisableUserCommand::class,
+            EnableUserCommand::class,
             PromoteUserCommand::class,
             ReactivateUserCommand::class,
+            RevokeLoginTokenCommand::class,
 
             AddBoundaryCommand::class,
             AddLayerCommand::class,
@@ -168,13 +176,22 @@ final class MessageBoxController
 
         /** @var Command $command */
         $command = $commandClass::fromPayload($payload);
-        $command->withAddedMetadata('user_id', $user->getId()->toString());
-        $command->withAddedMetadata('is_admin', in_array('ROLE_ADMIN', $user->getRoles(), true));
+
+        $metadata = $message['metadata'] ?? [];
+        $userId = $user->getId()->toString();
+
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles(), true);
+        if ($isAdmin && array_key_exists('user_id', $metadata)) {
+            $userId = $metadata['user_id'];
+        }
+
+        $command->withAddedMetadata('user_id', $userId);
+        $command->withAddedMetadata('is_admin', $isAdmin);
 
         try {
             $this->commandBus->dispatch($command);
         } catch (\Exception $e) {
-            return new JsonResponse(['message' => $e->getMessage()], 500);
+            return new JsonResponse(['message' => $e->getMessage()], $e->getCode() !== 0 ? $e->getCode() : 500);
         }
 
         return new JsonResponse([], 202);
@@ -228,7 +245,7 @@ final class MessageBoxController
 
     private function getMessage(Request $request): array
     {
-        return json_decode($request->getContent(), true);
+        return json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -12,18 +12,15 @@ use App\Domain\User\Event\UserHasBeenArchived;
 use App\Domain\User\Projection\UserProjector;
 use App\Model\User;
 use App\Service\UserManager;
+use Doctrine\ORM\NonUniqueResultException;
+use Exception;
+use RuntimeException;
 
 class ArchiveUserCommandHandler
 {
-    /** @var AggregateRepository */
-    private $aggregateRepository;
-
-    /** @var ProjectorCollection */
-    private $projectors;
-
-    /** @var UserManager */
-    private $userManager;
-
+    private AggregateRepository $aggregateRepository;
+    private ProjectorCollection $projectors;
+    private UserManager $userManager;
 
     public function __construct(AggregateRepository $aggregateRepository, UserManager $userManager, ProjectorCollection $projectors)
     {
@@ -34,8 +31,8 @@ class ArchiveUserCommandHandler
 
     /**
      * @param ArchiveUserCommand $command
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Exception
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function __invoke(ArchiveUserCommand $command)
     {
@@ -50,14 +47,19 @@ class ArchiveUserCommandHandler
         $user = $this->userManager->findUserById($userId);
 
         if (!$user instanceof User) {
-            throw new \Exception('User not found');
+            throw new RuntimeException('User not found');
         }
 
         $aggregateId = $userId;
         $event = UserHasBeenArchived::fromParams($aggregateId);
         $aggregate = $this->aggregateRepository->findAggregateById(UserAggregate::class, $aggregateId);
         $aggregate->apply($event);
+
         $this->aggregateRepository->storeEvent($event);
-        $this->projectors->getProjector(UserProjector::class)->apply($event);
+        $projector = $this->projectors->getProjector(UserProjector::class);
+        if (!$projector) {
+            throw new RuntimeException(sprintf('Projector %s not found.', UserProjector::class));
+        }
+        $projector->apply($event);
     }
 }

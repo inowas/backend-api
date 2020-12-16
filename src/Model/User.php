@@ -149,6 +149,11 @@ class User implements UserInterface
         $this->loginToken = $loginToken;
     }
 
+    public function createRandomLoginToken(): void
+    {
+        $this->setLoginToken(Uuid::uuid4()->toString());
+    }
+
     public function isEnabled(): bool
     {
         return $this->enabled;

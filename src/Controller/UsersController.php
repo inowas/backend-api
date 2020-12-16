@@ -64,6 +64,7 @@ class UsersController
                     'roles' => $user->getRoles(),
                     'profile' => $user->getProfile(),
                     'enabled' => $user->isEnabled(),
+                    'archived' => $user->isArchived(),
                     'login_token' => $user->getLoginToken(),
                 ];
             }
@@ -107,6 +108,8 @@ class UsersController
             'roles' => $user->getRoles(),
             'profile' => $user->getProfile(),
             'enabled' => $user->isEnabled(),
+            'archived' => $user->isArchived(),
+            'login_token' => $user->getLoginToken(),
             'tools' => $tools
         ];
 

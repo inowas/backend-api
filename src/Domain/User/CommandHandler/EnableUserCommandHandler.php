@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\User\CommandHandler;
 
 use App\Domain\User\Aggregate\UserAggregate;
+use App\Domain\User\Command\EnableUserCommand;
+use App\Domain\User\Event\UserHasBeenEnabled;
 use App\Model\ProjectorCollection;
 use App\Model\User;
-use App\Domain\User\Command\DeleteUserCommand;
-use App\Domain\User\Event\UserHasBeenDeleted;
 use App\Domain\User\Projection\UserProjector;
 use App\Repository\AggregateRepository;
 use App\Service\UserManager;
@@ -16,7 +16,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use RuntimeException;
 
-class DeleteUserCommandHandler
+class EnableUserCommandHandler
 {
     private AggregateRepository $aggregateRepository;
     private ProjectorCollection $projectors;
@@ -30,11 +30,11 @@ class DeleteUserCommandHandler
     }
 
     /**
-     * @param DeleteUserCommand $command
+     * @param EnableUserCommand $command
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function __invoke(DeleteUserCommand $command)
+    public function __invoke(EnableUserCommand $command)
     {
         $isAdmin = $command->getMetadataByKey('is_admin') === true || $command->getMetadataByKey('user_id') === 'CLI';
         if (!$isAdmin) {
@@ -55,7 +55,7 @@ class DeleteUserCommandHandler
         }
 
         $aggregateId = $userToDeleteId;
-        $event = UserHasBeenDeleted::fromParams($aggregateId);
+        $event = UserHasBeenEnabled::fromParams($aggregateId);
         $aggregate = $this->aggregateRepository->findAggregateById(UserAggregate::class, $aggregateId);
         $aggregate->apply($event);
 

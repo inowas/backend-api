@@ -3,13 +3,15 @@
 namespace App\Tests\Controller;
 
 use App\Model\User;
+use Doctrine\ORM\ORMException;
+use Exception;
 
 class UserCommandsTest extends CommandTestBaseClass
 {
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
     public function aUserCanRegister(): array
     {
@@ -34,7 +36,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $client->getResponse()->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($email);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $email]);
         self::assertInstanceOf(User::class, $user);
         self::assertEquals(['ROLE_USER'], $user->getRoles());
         return ['username' => $user->getUsername(), 'password' => $password];
@@ -45,7 +47,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @depends aUserCanRegister
      * @param array $credentials
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function aUserCanChangeUsername(array $credentials): array
     {
@@ -64,7 +66,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($newUserName);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $newUserName]);
         self::assertInstanceOf(User::class, $user);
         self::assertEquals($newUserName, $user->getUsername());
 
@@ -76,7 +78,34 @@ class UserCommandsTest extends CommandTestBaseClass
      * @depends aUserCanChangeUsername
      * @param array $credentials
      * @return array
-     * @throws \Exception
+     * @throws Exception
+     */
+    public function aUserCannotChangeUsernameAlreadyInUse(array $credentials): array
+    {
+        $username = $credentials['username'];
+        $password = $credentials['password'];
+
+
+        $usernameAlreadyInUse = $this->createRandomUser()->getUsername();
+        $command = [
+            'message_name' => 'changeUsername',
+            'payload' => [
+                'username' => $usernameAlreadyInUse
+            ]
+        ];
+
+        $token = $this->getToken($username, $password);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(400, $response->getStatusCode());
+        return ['username' => $username, 'password' => $password];
+    }
+
+    /**
+     * @test
+     * @depends aUserCannotChangeUsernameAlreadyInUse
+     * @param array $credentials
+     * @return array
+     * @throws Exception
      */
     public function aUserCanChangePassword(array $credentials): array
     {
@@ -97,7 +126,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertInstanceOf(User::class, $user);
         self::assertEquals($newPassword, $user->getPassword());
 
@@ -109,7 +138,7 @@ class UserCommandsTest extends CommandTestBaseClass
      * @depends aUserCanChangePassword
      * @param array $credentials
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function aUserCanChangeProfile(array $credentials): array
     {
@@ -132,7 +161,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertInstanceOf(User::class, $user);
         self::assertEquals($profile, $user->getProfile());
 
@@ -160,7 +189,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertInstanceOf(User::class, $user);
         self::assertTrue($user->isArchived());
 
@@ -173,22 +202,27 @@ class UserCommandsTest extends CommandTestBaseClass
      * @param array $credentials
      * @return array
      */
-    public function aUserCanBeReactivated(array $credentials): array
+    public function aUserCanBeReactivatedByAnAdmin(array $credentials): array
     {
         $username = $credentials['username'];
         $password = $credentials['password'];
-
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         $command = [
             'message_name' => 'reactivateUser',
-            'payload' => []
+            'payload' => [
+                'user_id' => $user->getId()
+            ]
         ];
 
-        $token = $this->getToken($username, $password);
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+        $token = $this->getToken($adminUsername, $adminPassword);
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertInstanceOf(User::class, $user);
         self::assertFalse($user->isArchived());
 
@@ -197,18 +231,18 @@ class UserCommandsTest extends CommandTestBaseClass
 
     /**
      * @test
-     * @depends aUserCanBeReactivated
+     * @depends aUserCanBeReactivatedByAnAdmin
      * @param array $credentials
      * @return array
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \JsonException
+     * @throws ORMException
+     * @throws Exception
      */
     public function aUserCanBePromotedByAnAdmin(array $credentials): array
     {
 
         $username = $credentials['username'];
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 
         $adminUsername = 'admin' . random_int(1000000, 9999999);
         $adminPassword = 'password' . random_int(1000000, 9999999);
@@ -227,7 +261,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertContains('ROLE_TEST_123', $user->getRoles());
 
         return $credentials;
@@ -235,18 +269,18 @@ class UserCommandsTest extends CommandTestBaseClass
 
     /**
      * @test
-     * @depends aUserCanBeReactivated
+     * @depends aUserCanBeReactivatedByAnAdmin
      * @param array $credentials
      * @return array
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \JsonException
+     * @throws ORMException
+     * @throws Exception
      */
     public function aUserCanBeDemotedByAnAdmin(array $credentials): array
     {
 
         $username = $credentials['username'];
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertContains('ROLE_TEST_123', $user->getRoles());
 
         $adminUsername = 'admin' . random_int(1000000, 9999999);
@@ -266,7 +300,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertNotContains('ROLE_TEST_123', $user->getRoles());
 
         return $credentials;
@@ -274,18 +308,164 @@ class UserCommandsTest extends CommandTestBaseClass
 
     /**
      * @test
-     * @depends aUserCanBePromotedByAnAdmin
+     * @depends aUserCanBeDemotedByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aUserCanBeDisabledByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertTrue($user->isEnabled());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'disableUser',
+            'payload' => ['user_id' => $user->getId()->toString()]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertFalse($user->isEnabled());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBeDisabledByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aUserCanBeEnabledByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertFalse($user->isEnabled());
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'enableUser',
+            'payload' => ['user_id' => $user->getId()->toString()]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertTrue($user->isEnabled());
+
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserCanBeEnabledByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aUserPasswordCanBeChangedByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        $user_id = $user->getId()->toString();
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $newPassword = sprintf('newPassword_%d', random_int(1000000, 10000000 - 1));
+
+        $command = [
+            'message_name' => 'changeUserPassword',
+            'payload' => [
+                'user_id' => $user_id,
+                'new_password' => $newPassword
+            ]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertEquals($newPassword, $user->getPassword());
+
+        return ['username' => $username, 'password' => $newPassword];
+    }
+
+    /**
+     * @test
+     * @depends aUserPasswordCanBeChangedByAnAdmin
+     * @param array $credentials
+     * @return array
+     * @throws ORMException
+     * @throws Exception
+     */
+    public function aLoginTokenCanBeChangedByAnAdmin(array $credentials): array
+    {
+        $username = $credentials['username'];
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        $user_id = $user->getId()->toString();
+        $oldLoginToken = $user->getLoginToken();
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $command = [
+            'message_name' => 'revokeLoginToken',
+            'payload' => [
+                'user_id' => $user_id
+            ]
+        ];
+
+        $token = $this->getToken($adminUsername, $adminPassword);
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var User $user */
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+        self::assertNotEquals($oldLoginToken, $user->getLoginToken());
+        return $credentials;
+    }
+
+    /**
+     * @test
+     * @depends aUserPasswordCanBeChangedByAnAdmin
      * @param array $credentials
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \JsonException
+     * @throws ORMException
+     * @throws Exception
      */
     public function aUserCanBeDeletedByAnAdmin(array $credentials): void
     {
-
         $username = $credentials['username'];
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         $user_id = $user->getId()->toString();
 
 
@@ -302,7 +482,7 @@ class UserCommandsTest extends CommandTestBaseClass
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var User $user */
-        $user = $this->em->getRepository(User::class)->findOneByUsername($username);
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
         self::assertNull($user);
     }
 }

@@ -6,18 +6,18 @@ namespace App\Domain\User\Command;
 
 use App\Model\Command;
 
-final class ArchiveUserCommand extends Command
+final class RevokeLoginTokenCommand extends Command
 {
-    private ?string $userId;
+    private string $userId;
 
     public static function fromPayload(array $payload): self
     {
         $self = new self();
-        $self->userId = $payload['user_id'] ?? null;
+        $self->userId = $payload['user_id'];
         return $self;
     }
 
-    public function userId(): ?string
+    public function userId(): string
     {
         return $this->userId;
     }
