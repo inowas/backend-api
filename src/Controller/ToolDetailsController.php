@@ -17,12 +17,8 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ToolDetailsController
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
+    private EntityManagerInterface $entityManager;
+    private TokenStorageInterface $tokenStorage;
 
     public function __construct(
         EntityManagerInterface $entityManager,

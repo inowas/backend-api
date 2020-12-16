@@ -45,6 +45,83 @@ class SimpleToolCommandsTest extends CommandTestBaseClass
 
     /**
      * @test
+     * @throws \Exception
+     */
+    public function anAdminCanCreateToolsForOtherUsers(): void
+    {
+        $user = $this->createRandomUser();
+
+        $adminUsername = 'admin' . random_int(1000000, 9999999);
+        $adminPassword = 'password' . random_int(1000000, 9999999);
+        $admin = $this->createUser($adminUsername, $adminPassword, ['ROLE_ADMIN']);
+
+        $toolInstanceId = Uuid::uuid4()->toString();
+        $command = [
+            'uuid' => Uuid::uuid4()->toString(),
+            'message_name' => 'createToolInstance',
+            'metadata' => ['user_id' => $user->getId()->toString()],
+            'payload' => [
+                'id' => $toolInstanceId,
+                'tool' => 'T0TEST',
+                'name' => 'ToolName',
+                'description' => 'ToolDescription',
+                'public' => false,
+                'data' => ['1234' => '5678']
+            ]
+        ];
+
+        $token = $this->getToken($admin->getUsername(), $admin->getPassword());
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var SimpleTool $simpleTool */
+        $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $toolInstanceId]);
+        self::assertEquals($command['payload']['tool'], $simpleTool->tool());
+        self::assertEquals($command['payload']['name'], $simpleTool->name());
+        self::assertEquals($command['payload']['description'], $simpleTool->description());
+        self::assertEquals($command['payload']['public'], $simpleTool->isPublic());
+        self::assertEquals($command['payload']['data'], $simpleTool->data());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function aUserCanNotCreateToolsForOtherUsers(): void
+    {
+        $user = $this->createRandomUser();
+        $toolInstanceId = Uuid::uuid4()->toString();
+        $command = [
+            'uuid' => Uuid::uuid4()->toString(),
+            'message_name' => 'createToolInstance',
+            'metadata' => ['user_id' => Uuid::uuid4()->toString()],
+            'payload' => [
+                'id' => $toolInstanceId,
+                'tool' => 'T0TEST',
+                'name' => 'ToolName',
+                'description' => 'ToolDescription',
+                'public' => false,
+                'data' => ['1234' => '5678']
+            ]
+        ];
+
+        $token = $this->getToken($user->getUsername(), $user->getPassword());
+        $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        self::assertEquals(202, $response->getStatusCode());
+
+        /** @var SimpleTool $simpleTool */
+        $simpleTool = $this->em->getRepository(SimpleTool::class)->findOneBy(['id' => $toolInstanceId]);
+        self::assertEquals($command['payload']['tool'], $simpleTool->tool());
+        self::assertEquals($command['payload']['name'], $simpleTool->name());
+        self::assertEquals($command['payload']['description'], $simpleTool->description());
+        self::assertEquals($command['payload']['public'], $simpleTool->isPublic());
+        self::assertEquals($command['payload']['data'], $simpleTool->data());
+        self::assertEquals($user->getId()->toString(), $simpleTool->userId());
+    }
+
+    /**
+     * @test
      * @depends sendCreateSimpleToolCommand
      * @throws \Exception
      */
