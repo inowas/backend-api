@@ -7,7 +7,6 @@ use App\Model\Modflow\ModflowModel;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\ToolInstance;
 use App\Model\User;
-use App\Repository\ToolRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,23 +48,35 @@ final class DashboardController
 
         /** @var User $user */
         $user = $token->getUser();
-
-        switch ($tool) {
-            case ('T03'):
-                $toolClass = ModflowModel::class;
-                break;
-            case ('T05'):
-                $toolClass = Mcda::class;
-                break;
-            default:
-                $toolClass = SimpleTool::class;
+        if (!$user instanceof User) {
+            return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
         $isPublic = $request->query->has('public') && $request->query->get('public') === 'true';
 
-        /** @var ToolRepositoryInterface $repository */
-        $repository = $this->entityManager->getRepository($toolClass);
-        $instances = $repository->getTool($tool, $user, $isPublic, false);
+        switch ($tool) {
+            case ('myTools'):
+                $instances = array_merge(
+                    $this->entityManager->getRepository(ModflowModel::class)->getAllToolsFromUser($user),
+                    $this->entityManager->getRepository(Mcda::class)->getAllToolsFromUser($user),
+                    $this->entityManager->getRepository(SimpleTool::class)->getAllToolsFromUser($user),
+                );
+                break;
+
+            case ('T03'):
+                $repository = $this->entityManager->getRepository(ModflowModel::class);
+                $instances = $repository->getTool($tool, $user, $isPublic, false);
+                break;
+
+            case ('T05'):
+                $repository = $this->entityManager->getRepository(Mcda::class);
+                $instances = $repository->getTool($tool, $user, $isPublic, false);
+                break;
+            default:
+                $repository = $this->entityManager->getRepository(SimpleTool::class);
+                $instances = $repository->getTool($tool, $user, $isPublic, false);
+        }
+
         return $this->createResponse($instances);
     }
 
@@ -78,6 +89,7 @@ final class DashboardController
                 'tool' => $instance->tool(),
                 'name' => $instance->name(),
                 'description' => $instance->description(),
+                'public' => $instance->isPublic(),
                 'created_at' => $instance->createdAt()->format(DATE_ATOM),
                 'updated_at' => $instance->createdAt()->format(DATE_ATOM),
                 'user_name' => $instance->getUsername()
