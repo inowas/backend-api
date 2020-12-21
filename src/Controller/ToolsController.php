@@ -80,10 +80,11 @@ class ToolsController
                     'name' => $toolInstance->name(),
                     'description' => $toolInstance->description(),
                     'public' => $toolInstance->isPublic(),
+                    'permissions' => $toolInstance->getPermissions($user),
+                    'created_at' => $toolInstance->createdAt()->format(DATE_ATOM),
+                    'updated_at' => $toolInstance->updatedAt()->format(DATE_ATOM),
                     'user_id' => $toolInstance->userId(),
                     'user_name' => $toolInstance->getUsername(),
-                    'created_at' => $toolInstance->createdAt()->format(DATE_ATOM),
-                    'updated_at' => $toolInstance->getUpdatedAt()->format(DATE_ATOM)
                 ];
             }
         }

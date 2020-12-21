@@ -65,12 +65,15 @@ class ToolDetailsController
 
         $result = [
             'id' => $toolInstance->id(),
+            'tool' => $toolInstance->tool(),
             'name' => $toolInstance->name(),
             'description' => $toolInstance->description(),
-            'permissions' => $permissions,
             'public' => $toolInstance->isPublic(),
+            'permissions' => $permissions,
             'created_at' => $toolInstance->createdAt()->format(DATE_ATOM),
-            'tool' => $toolInstance->tool(),
+            'updated_at' => $toolInstance->updatedAt()->format(DATE_ATOM),
+            'user_id' => $toolInstance->getUserId(),
+            'user_name' => $toolInstance->getUsername(),
             'data' => $toolInstance->data()
         ];
 
