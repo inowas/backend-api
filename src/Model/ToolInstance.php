@@ -147,13 +147,22 @@ abstract class ToolInstance implements JsonSerializable
         $this->user = $user;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         if (null === $this->getUser()) {
             return '';
         }
 
         return $this->getUser()->getUsername();
+    }
+
+    public function getUserId(): string
+    {
+        if (null === $this->getUser()) {
+            return '';
+        }
+
+        return $this->getUser()->getId()->toString();
     }
 
     public function setMetadata(ToolMetadata $metadata): void
@@ -216,7 +225,7 @@ abstract class ToolInstance implements JsonSerializable
         $this->createdAt = $createdAt;
     }
 
-    public function getUpdatedAt(): DateTimeImmutable
+    public function updatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
@@ -258,7 +267,7 @@ abstract class ToolInstance implements JsonSerializable
             'isArchived' => $this->isArchived,
             'isScenario' => $this->isScenario,
             'createdAt' => $this->createdAt()->format(DATE_ATOM),
-            'updatedAt' => $this->getUpdatedAt()->format(DATE_ATOM)
+            'updatedAt' => $this->updatedAt()->format(DATE_ATOM)
         ];
     }
 
