@@ -25,7 +25,7 @@ abstract class ToolInstance implements JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Model\User")
-     * @ORM\JoinColumn(name="userId", referencedColumnName="id")
+     * @ORM\JoinColumn(name="userId", referencedColumnName="id", onDelete="SET NULL")
      */
     protected User $user;
 
