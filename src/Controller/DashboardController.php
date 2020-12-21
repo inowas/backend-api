@@ -77,10 +77,10 @@ final class DashboardController
                 $instances = $repository->getTool($tool, $user, $isPublic, false);
         }
 
-        return $this->createResponse($instances);
+        return $this->createResponse($instances, $user);
     }
 
-    private function createResponse(array $instances): JsonResponse
+    private function createResponse(array $instances, User $user): JsonResponse
     {
         /** @var ToolInstance $instance */
         foreach ($instances as $key => $instance) {
@@ -90,8 +90,10 @@ final class DashboardController
                 'name' => $instance->name(),
                 'description' => $instance->description(),
                 'public' => $instance->isPublic(),
+                'permissions' => $instance->getPermissions($user),
                 'created_at' => $instance->createdAt()->format(DATE_ATOM),
-                'updated_at' => $instance->createdAt()->format(DATE_ATOM),
+                'updated_at' => $instance->updatedAt()->format(DATE_ATOM),
+                'user_id' => $instance->getUserId(),
                 'user_name' => $instance->getUsername()
             ];
         }
