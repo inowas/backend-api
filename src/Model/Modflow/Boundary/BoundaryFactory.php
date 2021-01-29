@@ -34,6 +34,9 @@ class BoundaryFactory
                 case 'evt':
                     return EvapotranspirationBoundary::fromArray($arr);
                     break;
+                case 'lak':
+                    return LakeBoundary::fromArray($arr);
+                    break;
                 case 'rch':
                     return RechargeBoundary::fromArray($arr);
                     break;
