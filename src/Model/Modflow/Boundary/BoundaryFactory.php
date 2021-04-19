@@ -31,6 +31,8 @@ class BoundaryFactory
                     return HeadObservationWell::fromArray($arr);
                 case 'evt':
                     return EvapotranspirationBoundary::fromArray($arr);
+                case 'lak':
+                    return LakeBoundary::fromArray($arr);
                 case 'rch':
                     return RechargeBoundary::fromArray($arr);
                 case 'wel':
