@@ -91,6 +91,7 @@ final class MessageBoxController
      * @Route("/messagebox", name="messagebox", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
+     * @throws \JsonException
      */
     public function messagebox(Request $request): JsonResponse
     {
@@ -249,8 +250,8 @@ final class MessageBoxController
     }
 
     /**
-     * @param $schema
-     * @param $content
+     * @param string $schema
+     * @param string $content
      * @throws Exception
      * @throws InvalidValue
      */

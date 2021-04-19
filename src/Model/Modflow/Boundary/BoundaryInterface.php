@@ -17,4 +17,6 @@ interface BoundaryInterface
     public function geometry(): Geometry;
 
     public function toArray(): array;
+
+    public function isExcludedFromCalculation(): bool;
 }

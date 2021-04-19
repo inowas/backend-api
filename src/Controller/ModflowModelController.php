@@ -6,9 +6,9 @@ namespace App\Controller;
 
 use App\Model\Modflow\Layer;
 use App\Model\Modflow\ModflowModel;
-use App\Model\Modflow\Soilmodel;
 use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -210,7 +210,6 @@ class ModflowModelController
             return new JsonResponse([], 403);
         }
 
-        /** @var Soilmodel $soilmodel */
         $soilmodel = $modflowModel->soilmodel();
 
         /** @var Layer $layer */
@@ -228,6 +227,7 @@ class ModflowModelController
      * @param string $id
      * @param string $bId
      * @return JsonResponse
+     * @throws Exception
      */
     public function indexBoundaryDetails(string $id, string $bId): JsonResponse
     {

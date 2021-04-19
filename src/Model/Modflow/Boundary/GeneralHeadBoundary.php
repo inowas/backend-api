@@ -15,11 +15,9 @@ final class GeneralHeadBoundary extends FeatureCollection implements BoundaryInt
 
     public const TYPE = 'ghb';
 
-    /** @var Feature */
-    private $generalHeadBoundary;
+    private Feature $generalHeadBoundary;
 
-    /** @var array $observationPoints */
-    private $observationPoints = [];
+    private array $observationPoints = [];
 
     /**
      * @param array $arr
@@ -66,6 +64,11 @@ final class GeneralHeadBoundary extends FeatureCollection implements BoundaryInt
         return $this->generalHeadBoundary;
     }
 
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->generalHeadBoundary->getProperties()['isExcludedFromCalculation'] ?? false;
+    }
+
     public function name(): string
     {
         return $this->generalHeadBoundary->getProperties()['name'];
@@ -73,7 +76,6 @@ final class GeneralHeadBoundary extends FeatureCollection implements BoundaryInt
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->generalHeadBoundary->getGeometry();
     }
 

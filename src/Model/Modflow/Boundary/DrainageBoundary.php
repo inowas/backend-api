@@ -15,11 +15,9 @@ final class DrainageBoundary extends FeatureCollection implements BoundaryInterf
 
     public const TYPE = 'drn';
 
-    /** @var Feature */
-    private $drainage;
+    private Feature $drainage;
 
-    /** @var array $observationPoints */
-    private $observationPoints = [];
+    private array $observationPoints = [];
 
     /**
      * @param array $arr
@@ -73,8 +71,12 @@ final class DrainageBoundary extends FeatureCollection implements BoundaryInterf
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->drainage->getGeometry();
+    }
+
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->drainage->getProperties()['isExcludedFromCalculation'] ?? false;
     }
 
     public function observationPoints(): array

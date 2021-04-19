@@ -15,11 +15,9 @@ final class ConstantHeadBoundary extends FeatureCollection implements BoundaryIn
 
     public const TYPE = 'chd';
 
-    /** @var Feature */
-    private $constantHeadBoundary;
+    private Feature $constantHeadBoundary;
 
-    /** @var array $observationPoints */
-    private $observationPoints = [];
+    private array $observationPoints = [];
 
     /**
      * @param array $arr
@@ -73,8 +71,12 @@ final class ConstantHeadBoundary extends FeatureCollection implements BoundaryIn
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->constantHeadBoundary->getGeometry();
+    }
+
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->constantHeadBoundary->getProperties()['isExcludedFromCalculation'] ?? false;
     }
 
     public function observationPoints(): array
