@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\Modflow\Boundary;
 
-final class BoundaryCollection implements \JsonSerializable
+use Exception;
+use JsonSerializable;
+
+final class BoundaryCollection implements JsonSerializable
 {
-    private $boundaries = [];
+    private array $boundaries = [];
 
     public static function fromArray(array $arr): self
     {
@@ -26,7 +29,7 @@ final class BoundaryCollection implements \JsonSerializable
 
     /**
      * @return BoundaryInterface|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function first(): ?BoundaryInterface
     {
@@ -34,7 +37,6 @@ final class BoundaryCollection implements \JsonSerializable
             return null;
         }
 
-        /** @noinspection PhpParamsInspection */
         return BoundaryFactory::fromArray(array_values($this->boundaries)[0]);
     }
 
@@ -56,7 +58,7 @@ final class BoundaryCollection implements \JsonSerializable
     /**
      * @param string $id
      * @return BoundaryInterface|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function findById(string $id): ?BoundaryInterface
     {

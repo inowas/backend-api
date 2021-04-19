@@ -73,8 +73,12 @@ final class RiverBoundary extends FeatureCollection implements BoundaryInterface
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->river->getGeometry();
+    }
+
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->river->getProperties()['isExcludedFromCalculation'] ?? false;
     }
 
     public function observationPoints(): array
