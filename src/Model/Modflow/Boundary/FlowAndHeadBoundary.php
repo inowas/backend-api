@@ -15,11 +15,8 @@ final class FlowAndHeadBoundary extends FeatureCollection implements BoundaryInt
 
     public const TYPE = 'fhb';
 
-    /** @var Feature */
-    private $flowAndHeadBoundary;
-
-    /** @var array $observationPoints */
-    private $observationPoints = [];
+    private Feature $flowAndHeadBoundary;
+    private array $observationPoints = [];
 
     /**
      * @param array $arr
@@ -66,6 +63,11 @@ final class FlowAndHeadBoundary extends FeatureCollection implements BoundaryInt
         return $this->flowAndHeadBoundary;
     }
 
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->flowAndHeadBoundary->getProperties()['isExcludedFromCalculation'] ?? false;
+    }
+
     public function name(): string
     {
         return $this->flowAndHeadBoundary->getProperties()['name'];
@@ -73,7 +75,6 @@ final class FlowAndHeadBoundary extends FeatureCollection implements BoundaryInt
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->flowAndHeadBoundary->getGeometry();
     }
 

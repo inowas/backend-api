@@ -24,7 +24,6 @@ final class WellBoundary extends Feature implements BoundaryInterface
             throw new RuntimeException('Invalid json, expecting type feature.');
         }
 
-        /** @noinspection PhpParamsInspection */
         return new static($self->getGeometry(), $self->getProperties(), $self->getId());
     }
 
@@ -35,7 +34,6 @@ final class WellBoundary extends Feature implements BoundaryInterface
 
     public function geometry(): Geometry
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getGeometry();
     }
 
@@ -52,6 +50,11 @@ final class WellBoundary extends Feature implements BoundaryInterface
     public function layers(): array
     {
         return $this->getProperties()['layers'];
+    }
+
+    public function isExcludedFromCalculation(): bool
+    {
+        return $this->getProperties()['isExcludedFromCalculation'] ?? false;
     }
 
     public function spValues(): array
