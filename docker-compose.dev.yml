@@ -4,12 +4,13 @@ services:
   php:
     build:
       context: .
+      dockerfile: Dockerfile_dev
       target: api_platform_php
     restart: always
     depends_on:
       - db
     volumes:
-      - .:/srv/api:rw,cached
+      - .:/srv/api:rw
 
   api:
     build:
