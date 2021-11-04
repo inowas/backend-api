@@ -45,9 +45,9 @@ class ModflowModel extends ToolInstance
     private array $calculation = [];
 
     /**
-     * @ORM\Column(name="packages", type="text", nullable=false)
+     * @ORM\OneToOne(targetEntity="Packages", mappedBy="packages", cascade={"all"})
      */
-    private string $packages = '[]';
+    private Packages $packages;
 
     public static function create(): ModflowModel
     {
@@ -63,7 +63,7 @@ class ModflowModel extends ToolInstance
         $self->transport = $arr['transport'] ?? [];
         $self->variableDensity = $arr['variableDensity'] ?? [];
         $self->calculation = $arr['calculation'] ?? [];
-        $self->packages = $arr['packages'] ? json_encode($arr['packages']) : '[]';
+        $self->packages = $arr['packages'] ? Packages::fromArray($arr['packages']) : Packages::fromArray([]);
         return $self;
     }
 
@@ -125,12 +125,12 @@ class ModflowModel extends ToolInstance
 
     public function packages(): Packages
     {
-        return Packages::fromString($this->packages);
+        return $this->packages;
     }
 
     public function setPackages(Packages $packages): void
     {
-        $this->packages = $packages->toString();
+        $this->packages = $packages;
     }
 
     public function soilmodel(): Soilmodel
@@ -160,7 +160,7 @@ class ModflowModel extends ToolInstance
             'soilmodel' => $this->soilmodel,
             'boundaries' => $this->boundaries,
             'calculation' => $this->calculation,
-            'packages' => $this->packages
+            'packages' => $this->packages->toArray(),
         ];
     }
 }

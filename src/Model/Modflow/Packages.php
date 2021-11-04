@@ -3,10 +3,25 @@
 namespace App\Model\Modflow;
 
 use App\Model\ValueObject;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="modflow_model_packages")
+ */
 final class Packages extends ValueObject
 {
-    private string $json = '[]';
+    /**
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="ModflowModel", inversedBy="packages")
+     * @ORM\JoinColumn(name="id")
+     */
+    private ModflowModel $modflowModel;
+
+    /**
+     * @ORM\Column(name="data", type="text", nullable=false)
+     */
+    private string $jsonData = '[]';
 
     /**
      * @param array $arr
@@ -16,7 +31,7 @@ final class Packages extends ValueObject
     public static function fromArray(array $arr): self
     {
         $self = new self();
-        $self->json = json_encode($arr, JSON_THROW_ON_ERROR);
+        $self->jsonData = json_encode($arr, JSON_THROW_ON_ERROR);
         return $self;
     }
 
@@ -27,7 +42,7 @@ final class Packages extends ValueObject
     public static function fromString(string $str): self
     {
         $self = new self();
-        $self->json = $str;
+        $self->jsonData = $str;
         return $self;
     }
 
@@ -41,11 +56,11 @@ final class Packages extends ValueObject
      */
     public function toArray(): array
     {
-        return json_decode($this->json, true, 512, JSON_THROW_ON_ERROR);
+        return json_decode($this->jsonData, true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function toString(): string
     {
-        return $this->json;
+        return $this->jsonData;
     }
 }
