@@ -4,6 +4,7 @@ namespace App\Model\Modflow;
 
 use App\Model\ValueObject;
 use Doctrine\ORM\Mapping as ORM;
+use Throwable;
 
 /**
  * @ORM\Entity()
@@ -73,7 +74,11 @@ class Packages extends ValueObject
      */
     public function toArray(): array
     {
-        return json_decode($this->jsonData, true, 512, JSON_THROW_ON_ERROR);
+        try {
+            return json_decode($this->jsonData, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Throwable $ex) {
+            return [];
+        }
     }
 
     public function toString(): string
