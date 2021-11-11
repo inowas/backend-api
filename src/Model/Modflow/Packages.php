@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Packages extends ValueObject
 {
+
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="ModflowModel", inversedBy="packages")
-     * @ORM\JoinColumn(name="id")
+     * @ORM\OneToOne(targetEntity="ModflowModel")
+     * @ORM\Column(name="id")
      */
     private ModflowModel $modflowModel;
 
