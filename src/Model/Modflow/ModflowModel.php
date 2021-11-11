@@ -45,7 +45,7 @@ class ModflowModel extends ToolInstance
     private array $calculation = [];
 
     /**
-     * @ORM\OneToOne(targetEntity="Packages", mappedBy="packages", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="Packages", mappedBy="packages", cascade={"all"}, fetch="EXTRA_LAZY")
      */
     private Packages $packages;
 
