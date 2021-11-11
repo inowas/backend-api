@@ -6,6 +6,7 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\UpdateFlopyPackagesCommand;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -41,8 +42,9 @@ class UpdateFlopyPackagesCommandHandler
             throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
-        $modflowModel->setPackages($command->packages());
-        $this->entityManager->persist($modflowModel);
+        $packages = $command->packages();
+        $packages->setModflowModel($modflowModel);
+        $this->entityManager->persist($packages);
         $this->entityManager->flush();
     }
 }

@@ -25,6 +25,22 @@ class Packages extends ValueObject
     private string $jsonData = '[]';
 
     /**
+     * @param ModflowModel $modflowModel
+     */
+    public function setModflowModel(ModflowModel $modflowModel): void
+    {
+        $this->modflowModel = $modflowModel;
+    }
+
+    /**
+     * @return ModflowModel
+     */
+    public function getModflowModel(): ModflowModel
+    {
+        return $this->modflowModel;
+    }
+
+    /**
      * @param array $arr
      * @return static
      * @throws \JsonException
