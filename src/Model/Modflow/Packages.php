@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table(name="modflow_model_packages")
  */
-final class Packages extends ValueObject
+class Packages extends ValueObject
 {
     /**
      * @ORM\Id
