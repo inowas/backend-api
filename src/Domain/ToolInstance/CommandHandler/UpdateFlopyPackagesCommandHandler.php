@@ -42,6 +42,13 @@ class UpdateFlopyPackagesCommandHandler
             throw new RuntimeException('The Model cannot be updated due to permission problems.');
         }
 
+        $packages = $this->entityManager->getRepository(Packages::class)->findOneBy(['id' => $modelId]);
+        if ($packages instanceof Packages) {
+            $packages->setJsonData($command->packages()->toString());
+            $this->entityManager->flush($packages);
+            return;
+        }
+
         $packages = $command->packages();
         $packages->setId($modflowModel->id());
         $this->entityManager->persist($packages);

@@ -64,6 +64,12 @@ class Packages extends ValueObject
     {
     }
 
+    public function setJsonData(string $data): self
+    {
+        $this->jsonData = $data;
+        return $this;
+    }
+
     /**
      * @return array
      * @throws \JsonException
