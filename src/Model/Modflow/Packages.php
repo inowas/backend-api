@@ -15,30 +15,26 @@ class Packages extends ValueObject
 
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="ModflowModel")
-     * @ORM\Column(name="id")
+     * @ORM\Column(name="id", type="string", unique=true, nullable=false)
      */
-    private ModflowModel $modflowModel;
+    private string $id;
 
     /**
      * @ORM\Column(name="data", type="text", nullable=false)
      */
     private string $jsonData = '[]';
 
-    /**
-     * @param ModflowModel $modflowModel
-     */
-    public function setModflowModel(ModflowModel $modflowModel): void
+    public function setId(string $id): void
     {
-        $this->modflowModel = $modflowModel;
+        $this->id = $id;
     }
 
     /**
-     * @return ModflowModel
+     * @return string
      */
-    public function getModflowModel(): ModflowModel
+    public function getId(): string
     {
-        return $this->modflowModel;
+        return $this->id;
     }
 
     /**

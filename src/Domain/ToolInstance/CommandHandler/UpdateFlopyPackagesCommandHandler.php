@@ -43,7 +43,7 @@ class UpdateFlopyPackagesCommandHandler
         }
 
         $packages = $command->packages();
-        $packages->setModflowModel($modflowModel);
+        $packages->setId($modflowModel->id());
         $this->entityManager->persist($packages);
         $this->entityManager->flush();
     }
