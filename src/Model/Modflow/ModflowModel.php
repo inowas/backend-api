@@ -57,7 +57,6 @@ class ModflowModel extends ToolInstance
         $self->transport = $arr['transport'] ?? [];
         $self->variableDensity = $arr['variableDensity'] ?? [];
         $self->calculation = $arr['calculation'] ?? [];
-        $self->packages = $arr['packages'] ? Packages::fromArray($arr['packages']) : Packages::fromArray([]);
         return $self;
     }
 
