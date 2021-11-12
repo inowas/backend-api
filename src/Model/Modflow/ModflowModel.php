@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ModflowModel extends ToolInstance
 {
-
     /**
      * @ORM\Column(name="discretization", type="json", nullable=false)
      */
@@ -44,11 +43,6 @@ class ModflowModel extends ToolInstance
      */
     private array $calculation = [];
 
-    /**
-     * @ORM\Column(name="packages", type="text", nullable=false)
-     */
-    private string $packages = '[]';
-
     public static function create(): ModflowModel
     {
         return new self();
@@ -63,7 +57,6 @@ class ModflowModel extends ToolInstance
         $self->transport = $arr['transport'] ?? [];
         $self->variableDensity = $arr['variableDensity'] ?? [];
         $self->calculation = $arr['calculation'] ?? [];
-        $self->packages = $arr['packages'] ? json_encode($arr['packages']) : '[]';
         return $self;
     }
 
@@ -123,16 +116,6 @@ class ModflowModel extends ToolInstance
         $this->calculation = $calculation->toArray();
     }
 
-    public function packages(): Packages
-    {
-        return Packages::fromString($this->packages);
-    }
-
-    public function setPackages(Packages $packages): void
-    {
-        $this->packages = $packages->toString();
-    }
-
     public function soilmodel(): Soilmodel
     {
         return Soilmodel::fromArray($this->soilmodel);
@@ -160,7 +143,6 @@ class ModflowModel extends ToolInstance
             'soilmodel' => $this->soilmodel,
             'boundaries' => $this->boundaries,
             'calculation' => $this->calculation,
-            'packages' => $this->packages
         ];
     }
 }

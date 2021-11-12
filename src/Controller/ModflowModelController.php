@@ -6,9 +6,11 @@ namespace App\Controller;
 
 use App\Model\Modflow\Layer;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use App\Model\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use JsonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -26,7 +28,7 @@ class ModflowModelController
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface  $tokenStorage
     )
     {
         $this->entityManager = $entityManager;
@@ -326,6 +328,7 @@ class ModflowModelController
      * @Route("/modflowmodels/{id}/packages", name="modflowmodel_packages", methods={"GET"})
      * @param string $id
      * @return JsonResponse
+     * @throws JsonException
      */
     public function indexPackages(string $id): JsonResponse
     {
@@ -342,7 +345,13 @@ class ModflowModelController
             return new JsonResponse([], 403);
         }
 
-        $result = $modflowModel->packages()->toArray();
-        return new JsonResponse($result);
+        /** @var Packages $packages */
+        $packages = $this->entityManager->getRepository(Packages::class)->findOneBy(['id' => $id]);
+
+        if ($packages instanceof Packages) {
+            return new JsonResponse($packages->toArray());
+        }
+
+        return new JsonResponse([], 404);
     }
 }

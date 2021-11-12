@@ -15,6 +15,7 @@ services:
   api:
     build:
       context: .
+      dockerfile: Dockerfile_dev
       target: api_platform_nginx
     restart: always
     depends_on:
