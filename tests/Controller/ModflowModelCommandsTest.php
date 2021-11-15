@@ -270,6 +270,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        var_dump($response->getContent());
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $original */
@@ -306,6 +307,7 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
 
         $token = $this->getToken($user->getUsername(), $user->getPassword());
         $response = $this->sendCommand('/v3/messagebox', $command, $token);
+        var_dump($response->getContent());
         self::assertEquals(202, $response->getStatusCode());
 
         /** @var ModflowModel $original */
