@@ -6,6 +6,7 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\CloneModflowModelCommand;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,13 +52,24 @@ class CloneModflowModelCommandHandler
             throw new RuntimeException('The ModflowModel cannot be cloned due to permission problems.');
         }
 
-        /** @var ModflowModel $clone */
         $clone = clone $original;
         $clone->setId($cloneId);
         $clone->setUser($user);
         $clone->setIsScenario(!$cloneAsTool);
 
         $this->entityManager->persist($clone);
+        $this->entityManager->flush();
+
+        /** @var Packages $packages */
+        $packages = $this->entityManager->getRepository(Packages::class)->findOneBy(['id' => $originId]);
+        if (!$packages instanceof Packages) {
+            throw new RuntimeException('Packages not found');
+        }
+
+        $packagesClone = $packages->clone($cloneId);
+
+        $this->entityManager->clear(Packages::class);
+        $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
 }

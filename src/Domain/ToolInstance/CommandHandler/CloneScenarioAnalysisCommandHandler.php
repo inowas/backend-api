@@ -6,6 +6,7 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\CloneScenarioAnalysisCommand;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use App\Model\ScenarioAnalysis\ScenarioAnalysis;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
@@ -83,6 +84,18 @@ class CloneScenarioAnalysisCommandHandler
         $clonedModel->setIsScenario(true);
         $clonedModel->setUser($user);
         $this->entityManager->persist($clonedModel);
+        $this->entityManager->flush();
+
+        /** @var Packages $packages */
+        $packages = $this->entityManager->getRepository(Packages::class)->findOneBy(['id' => $modelId]);
+        if (!$packages instanceof Packages) {
+            throw new RuntimeException('Packages not found');
+        }
+
+        $packagesClone = clone $packages->clone($newModelId);
+
+        $this->entityManager->clear(Packages::class);
+        $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
 }
