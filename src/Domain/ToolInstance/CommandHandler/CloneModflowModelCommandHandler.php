@@ -66,8 +66,9 @@ class CloneModflowModelCommandHandler
             throw new RuntimeException('Packages not found');
         }
 
-        $packagesClone = clone $packages;
-        $packagesClone->setId($cloneId);
+        $packagesClone = $packages->clone($cloneId);
+
+        $this->entityManager->clear($packages);
         $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
