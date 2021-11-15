@@ -92,8 +92,9 @@ class CloneScenarioAnalysisCommandHandler
             throw new RuntimeException('Packages not found');
         }
 
-        $packagesClone = clone $packages;
-        $packagesClone->setId($newModelId);
+        $packagesClone = clone $packages->clone($newModelId);
+
+        $this->entityManager->clear(Packages::class);
         $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }

@@ -4,6 +4,7 @@ namespace App\Model\Modflow;
 
 use App\Model\ValueObject;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -24,9 +25,22 @@ class Packages extends ValueObject
      */
     private string $jsonData = '[]';
 
-    public function setId(string $id): void
+    public function clone(string $id): self
+    {
+        $clone = clone $this;
+        $clone->setId($id);
+        return $clone;
+    }
+
+    public function __clone()
+    {
+        $this->id = Uuid::uuid4()->toString();
+    }
+
+    public function setId(string $id): self
     {
         $this->id = $id;
+        return $this;
     }
 
     /**

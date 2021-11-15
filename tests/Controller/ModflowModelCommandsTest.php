@@ -7,6 +7,7 @@ use App\Model\Modflow\Boundary\BoundaryFactory;
 use App\Model\Modflow\Discretization;
 use App\Model\Modflow\Layer;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use App\Model\Modflow\Soilmodel;
 use App\Model\ToolMetadata;
 use App\Model\User;
@@ -743,7 +744,9 @@ class ModflowModelCommandsTest extends CommandTestBaseClass
         $soilmodel->addLayer($layer);
         $modflowModel->setSoilmodel($soilmodel);
 
+        $packages = Packages::fromString('')->setId($modelId);
         $em->persist($modflowModel);
+        $em->persist($packages);
         $em->flush();
 
         return $modflowModel;
