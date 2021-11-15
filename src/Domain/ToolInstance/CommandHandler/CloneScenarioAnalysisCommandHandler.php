@@ -93,8 +93,8 @@ class CloneScenarioAnalysisCommandHandler
         }
 
         $packagesClone = clone $packages->clone($newModelId);
-        
-        $this->entityManager->clear($packages);
+
+        $this->entityManager->clear(Packages::class);
         $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }

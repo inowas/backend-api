@@ -68,7 +68,7 @@ class CloneModflowModelCommandHandler
 
         $packagesClone = $packages->clone($cloneId);
 
-        $this->entityManager->clear($packages);
+        $this->entityManager->clear(Packages::class);
         $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
