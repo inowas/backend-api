@@ -37,9 +37,10 @@ class Packages extends ValueObject
         $this->id = Uuid::uuid4()->toString();
     }
 
-    public function setId(string $id): void
+    public function setId(string $id): self
     {
         $this->id = $id;
+        return $this;
     }
 
     /**
