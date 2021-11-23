@@ -65,7 +65,8 @@ class ModflowModelController
             'public' => $modflowModel->isPublic(),
             'tool' => $modflowModel->tool(),
             'discretization' => $modflowModel->discretization()->toArray(),
-            'calculation_id' => $modflowModel->calculation()->latest()
+            'calculation_id' => $modflowModel->calculation()->latest(),
+            'is_scenario' => $modflowModel->isScenario(),
         ];
 
         return new JsonResponse($result);
