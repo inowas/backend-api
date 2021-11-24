@@ -88,8 +88,8 @@ class CreateScenarioCommandHandler
             throw new RuntimeException('Packages not found');
         }
 
-        $packagesClone = clone $packages->clone($newModelId);
-        $this->entityManager->clear(Packages::class);
+        $packagesClone = clone $packages;
+        $packagesClone->setId($newModelId);
         $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
