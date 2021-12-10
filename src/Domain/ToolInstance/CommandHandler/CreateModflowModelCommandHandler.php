@@ -40,6 +40,7 @@ class CreateModflowModelCommandHandler
             throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
+        /** @var ModflowModel $modflowModel */
         $modflowModel = ModflowModel::createWithParams($id, $user, 'T03', $metadata);
         $modflowModel->setDiscretization($discretization);
         $this->entityManager->persist($modflowModel);

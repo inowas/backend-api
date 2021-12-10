@@ -86,7 +86,6 @@ class Packages extends ValueObject
 
     /**
      * @return array
-     * @throws \JsonException
      */
     public function toArray(): array
     {
