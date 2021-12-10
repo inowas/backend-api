@@ -6,6 +6,7 @@ namespace App\Domain\ToolInstance\CommandHandler;
 
 use App\Domain\ToolInstance\Command\CreateScenarioAnalysisCommand;
 use App\Model\Modflow\ModflowModel;
+use App\Model\Modflow\Packages;
 use App\Model\ScenarioAnalysis\ScenarioAnalysis;
 use App\Model\SimpleTool\SimpleTool;
 use App\Model\User;
@@ -73,10 +74,19 @@ class CreateScenarioAnalysisCommandHandler
         $clonedModel->setId($newModelId);
         $clonedModel->setIsScenario(true);
         $clonedModel->setUser($user);
-        $name = $clonedModel->name();
-        $name .= " (basemodel)";
-        $clonedModel->setName($name);
+        $clonedModel->setName(sprintf('%s (basemodel)', $clonedModel->name()));
         $this->entityManager->persist($clonedModel);
+        $this->entityManager->flush();
+
+        /** @var Packages $packages */
+        $packages = $this->entityManager->getRepository(Packages::class)->findOneBy(['id' => $modelId]);
+        if (!$packages instanceof Packages) {
+            throw new RuntimeException('Packages not found');
+        }
+
+        $packagesClone = clone $packages;
+        $packagesClone->setId($newModelId);
+        $this->entityManager->persist($packagesClone);
         $this->entityManager->flush();
     }
 }
