@@ -6,7 +6,7 @@ use App\Model\ValueObject;
 
 final class VariableDensity extends ValueObject
 {
-    private $data;
+    private array $data;
 
     public static function fromArray(array $arr): self
     {

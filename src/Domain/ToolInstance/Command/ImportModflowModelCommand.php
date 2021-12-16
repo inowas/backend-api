@@ -7,33 +7,31 @@ namespace App\Domain\ToolInstance\Command;
 use App\Model\Command;
 use App\Model\Modflow\Boundary\BoundaryCollection;
 use App\Model\Modflow\Boundary\BoundaryFactory;
+use App\Model\Modflow\Calculation;
 use App\Model\Modflow\Discretization;
 use App\Model\Modflow\Layer;
+use App\Model\Modflow\Packages;
 use App\Model\Modflow\Soilmodel;
+use App\Model\Modflow\Transport;
+use App\Model\Modflow\VariableDensity;
+use Assert\AssertionFailedException;
 use Exception;
+use JsonException;
 
 class ImportModflowModelCommand extends Command
 {
-    /** @var string */
-    private $id;
+    private string $id;
+    private string $name;
+    private string $description;
+    private bool $isPublic;
+    private array $discretization;
+    private array $soilmodel;
+    private array $boundaries;
+    private array $transport;
+    private array $variableDensity;
+    private array $calculation;
+    private array $packages;
 
-    /** @var string */
-    private $name;
-
-    /** @var string */
-    private $description;
-
-    /** @var bool */
-    private $isPublic;
-
-    /** @var array */
-    private $discretization;
-
-    /** @var array */
-    private $soilmodel;
-
-    /** @var array */
-    private $boundaries;
 
     /**
      * @return string|null
@@ -58,6 +56,10 @@ class ImportModflowModelCommand extends Command
         $self->discretization = $payload['discretization'];
         $self->soilmodel = $payload['soilmodel'];
         $self->boundaries = $payload['boundaries'];
+        $self->transport = $payload['transport'] ?? [];
+        $self->variableDensity = $payload['variableDensity'] ?? [];
+        $self->calculation = $payload['calculation'] ?? [];
+        $self->packages = $payload['packages'] ?? [];
         return $self;
     }
 
@@ -101,8 +103,7 @@ class ImportModflowModelCommand extends Command
     }
 
     /**
-     * @return BoundaryCollection
-     * @throws Exception
+     * @throws Exception|AssertionFailedException
      */
     public function boundaries(): BoundaryCollection
     {
@@ -112,5 +113,28 @@ class ImportModflowModelCommand extends Command
         }
 
         return $boundaries;
+    }
+
+    public function transport(): Transport
+    {
+        return Transport::fromArray($this->transport);
+    }
+
+    public function variableDensity(): VariableDensity
+    {
+        return VariableDensity::fromArray($this->variableDensity);
+    }
+
+    public function calculation(): Calculation
+    {
+        return Calculation::fromArray($this->calculation);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function packages(): Packages
+    {
+        return Packages::fromArray($this->packages);
     }
 }
