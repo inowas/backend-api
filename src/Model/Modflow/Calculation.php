@@ -6,7 +6,7 @@ use App\Model\ValueObject;
 
 final class Calculation extends ValueObject
 {
-    private string $latest;
+    private ?string $latest;
     private array $history = [];
 
     public static function fromArray(array $arr): self
