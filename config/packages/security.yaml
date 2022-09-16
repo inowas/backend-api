@@ -25,6 +25,11 @@ security:
         success_handler:          lexik_jwt_authentication.handler.authentication_success
         failure_handler:          lexik_jwt_authentication.handler.authentication_failure
 
+    modflowcalculations:
+      pattern: ^/v3/
+      stateless: true
+      anonymous: true
+
     register:
       pattern:  ^/v3/register
       stateless: true
