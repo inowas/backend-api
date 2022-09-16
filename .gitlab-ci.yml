@@ -25,7 +25,7 @@ test:
     - curl -sS https://getcomposer.org/installer | php
 
     # Install all project dependencies
-    - php composer.phar install --no-interaction --prefer-dist --no-progress --no-suggest
+    - php composer.phar install --no-interaction --prefer-dist --no-progress
     - sh ./syncSchema.sh
 
   # We test PHP7.4 (the default) with MySQL
