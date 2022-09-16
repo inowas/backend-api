@@ -131,12 +131,6 @@
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
-    "laminas/laminas-eventmanager": {
-        "version": "3.2.1"
-    },
-    "laminas/laminas-zendframework-bridge": {
-        "version": "1.0.3"
-    },
     "lcobucci/jwt": {
         "version": "3.3.1"
     },
@@ -175,9 +169,6 @@
     },
     "ocramius/package-versions": {
         "version": "1.8.0"
-    },
-    "ocramius/proxy-manager": {
-        "version": "2.8.0"
     },
     "openlss/lib-array2xml": {
         "version": "1.0.0"
@@ -498,9 +489,6 @@
     },
     "vimeo/psalm": {
         "version": "3.17.1"
-    },
-    "webimpress/safe-writer": {
-        "version": "2.0.1"
     },
     "webmozart/assert": {
         "version": "1.8.0"
