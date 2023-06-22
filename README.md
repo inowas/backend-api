@@ -21,6 +21,7 @@ Now you can change all relevant parameter in the .env-file.
 ### Install the composer packages
 
 ```
+docker-compose build
 docker-compose run php composer install
 docker-compose up -d
 ```
