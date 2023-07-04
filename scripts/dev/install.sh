@@ -5,7 +5,7 @@ projectRoot=$( cd "$(dirname "${BASH_SOURCE[0]}")/../.." || { echo "determining 
 
 ## use all env variables from .env in this script
 set -o allexport
-source conf-file
+source .env
 set +o allexport
 
 docker network create web
