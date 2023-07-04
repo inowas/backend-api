@@ -17,13 +17,13 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 ## Create and install containers
-install:
+dev-install:
 	scripts/dev/install.sh
 
 ## Starts the local environment
-start:
+dev-start:
 	scripts/dev/start.sh
 
 ## Stops the local environment
-stop:
+dev-stop:
 	scripts/dev/stop.sh

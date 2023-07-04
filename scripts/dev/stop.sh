@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-docker compose -f docker-compose.dev.yml down
+## include variables and functions from util.inc.sh
+source "$(dirname "$0")/util.inc.sh"
+
+docker compose $dockerComposeFiles down

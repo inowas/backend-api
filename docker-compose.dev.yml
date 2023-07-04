@@ -5,12 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_dev
-      target: api_platform_php
+      target: api_platform_php-debug
     restart: always
     depends_on:
       - db
     volumes:
       - .:/srv/api:rw
+    environment:
+      - PHP_IDE_CONFIG=serverName=inowas.localhost
 
   api:
     build:

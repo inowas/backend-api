@@ -18,19 +18,25 @@ Now you can change all relevant parameter in the .env-file.
 
 3. **Build local dev environment**
 ```
-make install
+make dev-install
 ```
 4. **Start local dev environment**
 ```
-make start
+make dev-start
 ```
 5. **Stop local dev environment**
 ```
-make stop
+make dev-stop
 ```
 
 ### Use the local dev environment
 
-Users where created from file users.dist.json
+#### User logins
+
+Users are created from file users.dist.json.
+
+#### Debugging with xdebug
+
+
 
 
