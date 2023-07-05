@@ -7,10 +7,10 @@ set -e
 
 git fetch --all --tags --verbose
 
-# switch to the master branch
+# switch to the dev branch
 git checkout dev -q
 
-# if there are uncommited changes, finish here
+# if there are uncommitted changes, finish here
 if [[ $(git diff --stat) != '' ]]; then
   echo 'Dev branch is dirty, please fix.'
   exit 1
