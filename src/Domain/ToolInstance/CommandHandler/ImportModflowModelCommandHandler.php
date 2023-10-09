@@ -8,6 +8,7 @@ use App\Domain\ToolInstance\Command\ImportModflowModelCommand;
 use App\Model\Modflow\ModflowModel;
 use App\Model\ToolMetadata;
 use App\Model\User;
+use Assert\AssertionFailedException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -26,6 +27,7 @@ class ImportModflowModelCommandHandler
     /**
      * @param ImportModflowModelCommand $command
      * @throws Exception
+     * @throws AssertionFailedException
      */
     public function __invoke(ImportModflowModelCommand $command)
     {
@@ -41,14 +43,27 @@ class ImportModflowModelCommandHandler
             throw new RuntimeException(sprintf('User with id %s not found.', $userId));
         }
 
-        $modflowModel = ModflowModel::createWithParams($modelId, $user, 'T03', ToolMetadata::fromParams(
-            $command->name(), $command->description(), $command->isPublic()));
+        /** @var ModflowModel $modflowModel */
+        $modflowModel = ModflowModel::createWithParams(
+            $modelId,
+            $user,
+            'T03',
+            ToolMetadata::fromParams(
+                $command->name(), $command->description(), $command->isPublic()
+            )
+        );
 
         $modflowModel->setDiscretization($command->discretization());
         $modflowModel->setSoilmodel($command->soilmodel());
         $modflowModel->setBoundaries($command->boundaries());
-
+        $modflowModel->setTransport($command->transport());
+        $modflowModel->setVariableDensity($command->variableDensity());
+        $modflowModel->setCalculation($command->calculation());
         $this->entityManager->persist($modflowModel);
+
+        $packages = $command->packages()->setId($modelId);
+        $this->entityManager->persist($packages);
+
         $this->entityManager->flush();
     }
 }
