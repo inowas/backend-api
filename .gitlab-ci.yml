@@ -141,7 +141,7 @@ deploy:prod:training:
       git fetch --all --tags &&
       git checkout master &&
       git pull origin master &&
-      docker compose up -d &&
+      docker compose up -d --force-recreate &&
       docker compose exec -T php composer install --no-dev &&
       docker compose exec -T php ./bin/console doctrine:schema:update -f &&
       docker compose exec -T php ./bin/console cache:clear -e prod &&
