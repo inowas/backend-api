@@ -47,21 +47,18 @@ deploy:dev:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api-dev &&
-      docker-compose down &&
+    - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api.dev.inowas.com &&
+      docker compose down &&
       git checkout dev &&
       git fetch --all --tags &&
-      git pull gitlab dev &&
-      docker-compose up -d &&
-      docker-compose exec -T php composer install --no-dev &&
-      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
-      docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-metadata &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-query &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-result &&
+      git pull origin dev &&
+      docker compose up -d --force-recreate &&
+      docker compose exec -T php composer install --no-dev &&
+      docker compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker compose exec -T php ./bin/console cache:clear -e prod &&
+      docker compose exec -T php ./bin/console cache:clear -e dev'
+    - ssh -t root@api.dev.inowas.com 'cd /srv/docker/api.dev.inowas.com &&  
       sh syncSchema.sh'
-
   only:
     - dev
 
@@ -77,18 +74,17 @@ deploy:prod:production:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh -t root@api.dss.inowas.com 'cd /srv/docker/api-dss &&
-      docker-compose down &&
+    - ssh -t root@api.dss.inowas.com 'cd /srv/docker/api.dss.inowas.com &&
+      docker compose down &&
+      git checkout master &&
       git fetch --all --tags &&
-      git pull gitlab master &&
-      docker-compose up -d &&
-      docker-compose exec -T php composer install --no-dev &&
-      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
-      docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-metadata &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-query &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-result &&
+      git pull origin master &&
+      docker compose up -d --force-recreate &&
+      docker compose exec -T php composer install --no-dev &&
+      docker compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker compose exec -T php ./bin/console cache:clear -e prod &&
+      docker compose exec -T php ./bin/console cache:clear -e dev'
+    - ssh -t root@api.dss.inowas.com 'cd /srv/docker/api.dss.inowas.com &&  
       sh syncSchema.sh'
 
   only:
@@ -106,18 +102,17 @@ deploy:prod:smart-control:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh -t root@api.dss.smart-control.inowas.com 'cd /srv/docker/api-smart-control &&
-      docker-compose down &&
+    - ssh -t root@api.dss.smart-control.inowas.com 'cd /srv/docker/api.dss.smart-control.inowas.com &&
+      docker compose down &&
       git fetch --all --tags &&
-      git pull gitlab master &&
-      docker-compose up -d &&
-      docker-compose exec -T php composer install --no-dev &&
-      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
-      docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-metadata &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-query &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-result &&
+      git checkout master &&
+      git pull origin master &&
+      docker compose up -d --force-recreate &&
+      docker compose exec -T php composer install --no-dev &&
+      docker compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker compose exec -T php ./bin/console cache:clear -e prod &&
+      docker compose exec -T php ./bin/console cache:clear -e dev'
+    - ssh -t root@api.dss.smart-control.inowas.com 'cd /srv/docker/api.dss.smart-control.inowas.com &&
       sh syncSchema.sh'
 
   only:
@@ -135,18 +130,17 @@ deploy:prod:training:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh -t root@api.training.inowas.com 'cd /srv/docker/api-training &&
-      docker-compose down &&
+    - ssh -t root@api.training.inowas.com 'cd /srv/docker/api.training.inowas.com &&
+      docker compose down &&
       git fetch --all --tags &&
-      git pull gitlab master &&
-      docker-compose up -d &&
-      docker-compose exec -T php composer install --no-dev &&
-      docker-compose exec -T php ./bin/console doctrine:schema:update -f &&
-      docker-compose exec -T php ./bin/console cache:clear -e prod &&
-      docker-compose exec -T php ./bin/console cache:clear -e dev &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-metadata &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-query &&
-      docker-compose exec -T php ./bin/console doctrine:cache:clear-result &&
+      git checkout master &&
+      git pull origin master &&
+      docker compose up -d --force-recreate &&
+      docker compose exec -T php composer install --no-dev &&
+      docker compose exec -T php ./bin/console doctrine:schema:update -f &&
+      docker compose exec -T php ./bin/console cache:clear -e prod &&
+      docker compose exec -T php ./bin/console cache:clear -e dev'
+    - ssh -t root@api.training.inowas.com 'cd /srv/docker/api.training.inowas.com &&
       sh syncSchema.sh'
 
   only:
