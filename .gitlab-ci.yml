@@ -52,6 +52,7 @@ deploy:dev:
       git checkout dev &&
       git fetch --all --tags &&
       git pull origin dev &&
+      docker compose build &&
       docker compose up -d --force-recreate &&
       docker compose exec -T php composer install --no-dev &&
       docker compose exec -T php ./bin/console doctrine:schema:update -f &&
@@ -79,6 +80,7 @@ deploy:prod:production:
       git checkout master &&
       git fetch --all --tags &&
       git pull origin master &&
+      docker compose build &&
       docker compose up -d --force-recreate &&
       docker compose exec -T php composer install --no-dev &&
       docker compose exec -T php ./bin/console doctrine:schema:update -f &&
@@ -107,6 +109,7 @@ deploy:prod:smart-control:
       git fetch --all --tags &&
       git checkout master &&
       git pull origin master &&
+      docker compose build &&
       docker compose up -d --force-recreate &&
       docker compose exec -T php composer install --no-dev &&
       docker compose exec -T php ./bin/console doctrine:schema:update -f &&
@@ -135,6 +138,7 @@ deploy:prod:training:
       git fetch --all --tags &&
       git checkout master &&
       git pull origin master &&
+      docker compose build &&
       docker compose up -d --force-recreate &&
       docker compose exec -T php composer install --no-dev &&
       docker compose exec -T php ./bin/console doctrine:schema:update -f &&
